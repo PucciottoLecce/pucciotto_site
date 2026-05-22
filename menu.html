@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Menù – Pucciotto</title>
+  <meta name="description" content="Menù completo di Pucciotto – pucciotti, crocchette e bevande.">
+  <meta name="theme-color" content="#c0392b">
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link href="https://fonts.googleapis.com/css2?family=Lobster&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      --cream: #faf8f5; --white: #fff; --black: #1a1a1a;
+      --red: #c0392b; --red2: #a93226;
+      --border: #e8e4e0; --muted: #999;
+    }
+    body { font-family: 'DM Sans', sans-serif; background: var(--cream); color: var(--black); min-height: 100vh; -webkit-font-smoothing: antialiased; }
+
+    /* ── Header ── */
+    .header {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(250,248,245,0.96); backdrop-filter: blur(14px);
+      border-bottom: 1px solid var(--border);
+      padding: 0 16px; height: 54px;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .header-brand { display: flex; align-items: center; text-decoration: none; }
+    .header-brand img { width: 140px; height: auto; display: block; }
+    .back-btn {
+      text-decoration: none; color: var(--muted);
+      font-size: 13px; font-weight: 500;
+      display: flex; align-items: center; gap: 4px;
+      padding: 7px 14px; border-radius: 20px;
+      border: 1.5px solid var(--border); background: var(--white);
+      transition: all 0.18s;
+    }
+    .back-btn:hover { color: var(--black); border-color: #bbb; }
+
+    /* ── Tabs ── */
+    .tabs {
+      display: flex; gap: 8px;
+      padding: 10px 16px;
+      border-bottom: 1px solid var(--border);
+      overflow-x: auto; scrollbar-width: none;
+      position: sticky; top: 54px; z-index: 99;
+      background: rgba(250,248,245,0.96); backdrop-filter: blur(14px);
+    }
+    .tabs::-webkit-scrollbar { display: none; }
+    .tab-btn {
+      flex-shrink: 0;
+      background: var(--white); border: 1.5px solid var(--border); border-radius: 50px;
+      color: var(--muted); font-family: 'DM Sans', sans-serif;
+      font-size: 13px; font-weight: 600; padding: 7px 16px;
+      cursor: pointer; transition: all 0.18s; white-space: nowrap;
+    }
+    .tab-btn.active { background: var(--red); border-color: var(--red); color: #fff; box-shadow: 0 3px 10px rgba(192,57,43,0.22); }
+    .tab-btn:hover:not(.active) { border-color: #bbb; color: var(--black); }
+
+    /* ── Content ── */
+    .content { max-width: 680px; margin: 0 auto; padding: 20px 16px 110px; }
+    .category-section { display: none; animation: fadeUp 0.22s ease both; }
+    .category-section.active { display: block; }
+
+    .cat-header { display: flex; align-items: center; gap: 10px; margin-bottom: 4px; }
+    .cat-icon { font-size: 22px; }
+    .cat-title { font-family: 'Lobster', cursive; font-size: 26px; color: var(--black); }
+    .cat-meta { display: flex; align-items: center; gap: 8px; margin-bottom: 16px; }
+    .cat-count { background: #f0ece8; color: var(--muted); font-size: 11px; font-weight: 600; padding: 3px 10px; border-radius: 20px; }
+    .cat-subtitle { font-size: 13px; color: var(--muted); }
+
+    /* ── Cards ── */
+    .menu-grid { display: flex; flex-direction: column; gap: 10px; }
+    .menu-card {
+      background: var(--white); border: 1.5px solid var(--border); border-radius: 16px;
+      padding: 16px 18px;
+      display: flex; align-items: flex-start; justify-content: space-between; gap: 14px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+      transition: border-color 0.18s, box-shadow 0.18s;
+    }
+    .menu-card:active { border-color: #d0ccc8; box-shadow: 0 4px 14px rgba(0,0,0,0.08); }
+    .menu-card.unavailable { opacity: 0.42; }
+
+    .card-info { flex: 1; min-width: 0; }
+    .card-name { font-size: 16px; font-weight: 700; margin-bottom: 4px; line-height: 1.3; }
+    .card-ingredients { font-size: 12px; color: var(--muted); line-height: 1.5; margin-bottom: 8px; }
+    .card-allergens { display: flex; flex-wrap: wrap; gap: 5px; }
+    .allergen-tag {
+      font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em;
+      background: #fff3f2; color: var(--red); border: 1px solid rgba(192,57,43,0.18);
+      padding: 3px 8px; border-radius: 8px;
+    }
+
+    .card-right { display: flex; flex-direction: column; align-items: flex-end; gap: 8px; flex-shrink: 0; }
+    .card-price { font-family: 'Lobster', cursive; font-size: 22px; color: var(--red); }
+    .unavailable-badge {
+      font-size: 10px; font-weight: 600; text-transform: uppercase;
+      background: #f5f3f0; color: var(--muted); padding: 4px 10px; border-radius: 20px;
+    }
+
+    /* ── Loading ── */
+    .state-wrap { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 200px; gap: 12px; }
+    .spinner { width: 26px; height: 26px; border: 3px solid var(--border); border-top-color: var(--red); border-radius: 50%; animation: spin 0.65s linear infinite; }
+    .state-msg { font-size: 14px; color: var(--muted); text-align: center; line-height: 1.6; }
+
+    /* ── Float nav ── */
+    .float-nav {
+      position: fixed; bottom: calc(20px + env(safe-area-inset-bottom, 0px)); left: 50%;
+      transform: translateX(-50%) translateY(70px);
+      z-index: 200;
+      display: flex; gap: 4px;
+      background: rgba(22,22,22,0.94); border-radius: 50px;
+      padding: 5px; box-shadow: 0 8px 30px rgba(0,0,0,0.28);
+      backdrop-filter: blur(18px);
+      transition: transform 0.32s cubic-bezier(.22,1,.36,1), opacity 0.32s ease;
+      opacity: 0; pointer-events: none;
+    }
+    .float-nav.visible { transform: translateX(-50%) translateY(0); opacity: 1; pointer-events: auto; }
+    .float-btn {
+      background: none; border: none; color: rgba(255,255,255,0.48);
+      font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 600;
+      padding: 9px 16px; cursor: pointer; border-radius: 50px;
+      transition: all 0.18s; white-space: nowrap;
+      display: flex; align-items: center; gap: 5px;
+    }
+    .float-btn.active { background: var(--red); color: #fff; }
+    .float-btn:hover:not(.active) { color: #fff; }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+    @keyframes fadeUp { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
+  </style>
+</head>
+<body>
+
+<header class="header">
+  <a href="index.html" class="header-brand"><img src="logo_text.svg" alt="Pucciotto"></a>
+  <a href="index.html" class="back-btn">← Indietro</a>
+</header>
+
+<div class="tabs" id="tabs"></div>
+
+<main class="content">
+  <div class="state-wrap" id="loading">
+    <div class="spinner"></div>
+    <p class="state-msg">Caricamento menù…</p>
+  </div>
+  <div id="menu-content" style="display:none"></div>
+</main>
+
+<nav class="float-nav" id="float-nav"></nav>
+
+<script>
+const API_BASE = "https://orderpucciotto.onrender.com";
+const CAT_META = {
+  pucciotti:  { label: "Pucciotti",  icon: "🥙", sub: "La nostra puccia" },
+  crocchette: { label: "Crocchette", icon: "🥔", sub: "Artigianali" },
+  bevande:    { label: "Bevande",    icon: "🥤", sub: "Bibite e birre" },
+};
+
+async function loadMenu() {
+  try {
+    const res = await fetch(`${API_BASE}/api/menu`);
+    if (!res.ok) throw new Error();
+    renderMenu(await res.json());
+  } catch {
+    document.getElementById("loading").innerHTML =
+      `<p class="state-msg">⚠️ Impossibile caricare il menù.<br>Riprova tra qualche istante.</p>`;
+  }
+}
+
+function renderMenu(data) {
+  document.getElementById("loading").style.display = "none";
+  const wrap = document.getElementById("menu-content");
+  const tabsEl = document.getElementById("tabs");
+  const floatEl = document.getElementById("float-nav");
+  wrap.style.display = "block";
+
+  const cats = Object.keys(CAT_META).filter(c => data[c]?.length);
+
+  cats.forEach((cat, i) => {
+    const m = CAT_META[cat];
+    const items = data[cat];
+    const avail = items.filter(x => x.is_available).length;
+
+    // top tab
+    const btn = document.createElement("button");
+    btn.className = "tab-btn" + (i === 0 ? " active" : "");
+    btn.innerHTML = `${m.icon} ${m.label}`;
+    btn.dataset.cat = cat;
+    btn.addEventListener("click", () => switchTab(cat));
+    tabsEl.appendChild(btn);
+
+    // float btn
+    const fb = document.createElement("button");
+    fb.className = "float-btn" + (i === 0 ? " active" : "");
+    fb.innerHTML = `${m.icon} ${m.label}`;
+    fb.dataset.cat = cat;
+    fb.addEventListener("click", () => { switchTab(cat); window.scrollTo({ top: 0, behavior: "smooth" }); });
+    floatEl.appendChild(fb);
+
+    // section
+    const sec = document.createElement("div");
+    sec.className = "category-section" + (i === 0 ? " active" : "");
+    sec.id = `cat-${cat}`;
+    sec.innerHTML = `
+      <div class="cat-header"><span class="cat-icon">${m.icon}</span><h2 class="cat-title">${m.label}</h2></div>
+      <div class="cat-meta">
+        <span class="cat-count">${avail} disponibili</span>
+        <span class="cat-subtitle">${m.sub}</span>
+      </div>
+      <div class="menu-grid">
+        ${items.map(item => `
+          <div class="menu-card${item.is_available ? "" : " unavailable"}">
+            <div class="card-info">
+              <div class="card-name">${item.name}</div>
+              ${item.ingredients?.length ? `<div class="card-ingredients">${item.ingredients.join(", ")}</div>` : ""}
+              ${item.allergens?.length ? `<div class="card-allergens">${item.allergens.map(a => `<span class="allergen-tag">${a}</span>`).join("")}</div>` : ""}
+            </div>
+            <div class="card-right">
+              <span class="card-price">€${parseFloat(item.price).toFixed(2)}</span>
+              ${!item.is_available ? '<span class="unavailable-badge">Non disp.</span>' : ""}
+            </div>
+          </div>`).join("")}
+      </div>`;
+    wrap.appendChild(sec);
+  });
+
+  // float nav visibility — attiva solo dopo paint
+  requestAnimationFrame(() => {
+    const observer = new IntersectionObserver(([e]) => {
+      floatEl.classList.toggle("visible", !e.isIntersecting);
+    }, { threshold: 0, rootMargin: "-54px 0px 0px 0px" });
+    observer.observe(tabsEl);
+  });
+}
+
+function switchTab(cat) {
+  document.querySelectorAll(".tab-btn,.float-btn").forEach(b => b.classList.toggle("active", b.dataset.cat === cat));
+  document.querySelectorAll(".category-section").forEach(s => s.classList.toggle("active", s.id === `cat-${cat}`));
+}
+
+loadMenu();
+</script>
+</body>
+</html>
