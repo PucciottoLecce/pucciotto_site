@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Allergeni – Pucciotto</title>
+  <meta name="description" content="Informazioni sugli allergeni di tutti i prodotti Pucciotto – Reg. UE 1169/2011.">
+  <meta name="theme-color" content="#c0392b">
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link href="https://fonts.googleapis.com/css2?family=Lobster&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      --cream: #faf8f5; --white: #fff; --black: #1a1a1a;
+      --red: #c0392b; --border: #e8e4e0; --muted: #999;
+    }
+    body { font-family: 'DM Sans', sans-serif; background: var(--cream); color: var(--black); min-height: 100vh; -webkit-font-smoothing: antialiased; }
+
+    /* ── Header ── */
+    .header {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(250,248,245,0.96); backdrop-filter: blur(14px);
+      border-bottom: 1px solid var(--border);
+      padding: 0 16px; height: 54px;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .header-brand { display: flex; align-items: center; text-decoration: none; }
+    .header-brand img { width: 140px; height: auto; display: block; }
+    .back-btn {
+      text-decoration: none; color: var(--muted); font-size: 13px; font-weight: 500;
+      display: flex; align-items: center; gap: 4px;
+      padding: 7px 14px; border-radius: 20px;
+      border: 1.5px solid var(--border); background: var(--white); transition: all 0.18s;
+    }
+    .back-btn:hover { color: var(--black); border-color: #bbb; }
+
+    /* ── Notice ── */
+    .notice {
+      background: #fff5f4; border-bottom: 1px solid rgba(192,57,43,0.15);
+      padding: 10px 16px; font-size: 12px; font-weight: 500;
+      color: var(--red); text-align: center; line-height: 1.5;
+    }
+
+    /* ── Tabs ── */
+    .tabs {
+      display: flex; gap: 8px; padding: 10px 16px;
+      border-bottom: 1px solid var(--border);
+      overflow-x: auto; scrollbar-width: none;
+      position: sticky; top: 54px; z-index: 99;
+      background: rgba(250,248,245,0.96); backdrop-filter: blur(14px);
+    }
+    .tabs::-webkit-scrollbar { display: none; }
+    .tab-btn {
+      flex-shrink: 0; background: var(--white); border: 1.5px solid var(--border); border-radius: 50px;
+      color: var(--muted); font-family: 'DM Sans', sans-serif;
+      font-size: 13px; font-weight: 600; padding: 7px 16px;
+      cursor: pointer; transition: all 0.18s; white-space: nowrap;
+    }
+    .tab-btn.active { background: var(--red); border-color: var(--red); color: #fff; box-shadow: 0 3px 10px rgba(192,57,43,0.22); }
+    .tab-btn:hover:not(.active) { border-color: #bbb; color: var(--black); }
+
+    .content { max-width: 680px; margin: 0 auto; padding: 20px 16px 60px; }
+
+    /* ── Views ── */
+    .view { display: none; animation: fadeUp 0.22s ease both; }
+    .view.active { display: block; }
+
+    /* ── Schede per prodotto ── */
+    .product-grid { display: flex; flex-direction: column; gap: 10px; }
+    .product-card {
+      background: var(--white); border: 1.5px solid var(--border); border-radius: 16px;
+      padding: 15px 18px; box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+      transition: border-color 0.18s;
+    }
+    .product-card:hover { border-color: #d4d0cc; }
+    .product-top { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 10px; }
+    .product-name { font-size: 15px; font-weight: 700; }
+    .product-cat {
+      font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em;
+      background: #fff3f2; color: var(--red); padding: 3px 10px; border-radius: 20px;
+      flex-shrink: 0;
+    }
+    .allergen-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+    .chip {
+      font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em;
+      background: #fff3f2; color: var(--red);
+      border: 1px solid rgba(192,57,43,0.18); padding: 4px 10px; border-radius: 8px;
+    }
+    .no-allergens { font-size: 13px; color: var(--muted); }
+
+    /* ── Tabella desktop ── */
+    .table-wrap { border-radius: 16px; border: 1.5px solid var(--border); box-shadow: 0 2px 8px rgba(0,0,0,0.04); overflow: hidden; }
+    .allergy-table { width: 100%; border-collapse: collapse; background: var(--white); }
+    .allergy-table th {
+      font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em;
+      color: var(--muted); padding: 12px 10px; text-align: left;
+      border-bottom: 1.5px solid var(--border); background: #f8f5f2;
+      white-space: nowrap;
+    }
+    .allergy-table th:not(:first-child) { text-align: center; min-width: 52px; }
+    .allergy-table td { padding: 12px 10px; border-bottom: 1px solid #f0ece8; font-size: 14px; }
+    .allergy-table tbody tr:last-child td { border-bottom: none; }
+    .allergy-table tr:hover td { background: #faf8f5; }
+    .item-name { font-weight: 700; font-size: 14px; }
+    .item-cat { font-size: 10px; font-weight: 600; text-transform: uppercase; color: var(--red); margin-top: 2px; }
+    .dot-cell { text-align: center; }
+    .dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; background: var(--red); }
+
+    /* ── Tabella mobile: card per prodotto ── */
+    .mobile-table { display: none; flex-direction: column; gap: 10px; }
+    .mt-card {
+      background: var(--white); border: 1.5px solid var(--border); border-radius: 16px;
+      padding: 14px 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    }
+    .mt-header { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 10px; }
+    .mt-name { font-size: 15px; font-weight: 700; }
+    .mt-cat {
+      font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em;
+      background: #fff3f2; color: var(--red); padding: 3px 10px; border-radius: 20px; flex-shrink: 0;
+    }
+    .mt-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+    .mt-chip {
+      font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em;
+      background: #fff3f2; color: var(--red);
+      border: 1px solid rgba(192,57,43,0.18); padding: 4px 10px; border-radius: 8px;
+    }
+    .mt-none { font-size: 13px; color: var(--muted); }
+
+    @media (max-width: 600px) {
+      .table-wrap { display: none; }
+      .mobile-table { display: flex; }
+    }
+
+
+    /* ── Loading ── */
+    .state-wrap { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 200px; gap: 12px; }
+    .spinner { width: 26px; height: 26px; border: 3px solid var(--border); border-top-color: var(--red); border-radius: 50%; animation: spin 0.65s linear infinite; }
+    .state-msg { font-size: 14px; color: var(--muted); text-align: center; line-height: 1.6; }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+    @keyframes fadeUp { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
+  </style>
+</head>
+<body>
+
+<header class="header">
+  <a href="index.html" class="header-brand"><img src="logo_text.svg" alt="Pucciotto"></a>
+  <a href="index.html" class="back-btn">← Indietro</a>
+</header>
+
+<div class="notice">⚠️ Informazioni allergeni – Reg. UE 1169/2011</div>
+
+<div class="tabs">
+  <button class="tab-btn active" data-view="schede">Per prodotto</button>
+  <button class="tab-btn" data-view="tabella">Tabella</button>
+</div>
+
+<main class="content">
+  <div class="state-wrap" id="loading">
+    <div class="spinner"></div>
+    <p class="state-msg">Caricamento allergeni…</p>
+  </div>
+
+  <div class="view active" id="view-schede" style="display:none">
+    <div class="product-grid" id="schede-content"></div>
+  </div>
+
+  <div class="view" id="view-tabella" style="display:none">
+    <div class="table-wrap"><table class="allergy-table" id="tabella-content"></table></div>
+    <div class="mobile-table" id="mobile-table-content"></div>
+  </div>
+
+
+</main>
+
+<script>
+const API_BASE = "https://orderpucciotto.onrender.com";
+const CAT_LABEL = { pucciotti: "Pucciotto", crocchette: "Crocchetta", bevande: "Bevanda" };
+const NORMALIZE = {
+  "solfiti":"Anidride solforosa e solfiti","anidride solforosa":"Anidride solforosa e solfiti",
+  "frutta a guscio":"Frutta a guscio","arachidi":"Arachidi","glutine":"Glutine",
+  "crostacei":"Crostacei","uova":"Uova","pesce":"Pesce","soia":"Soia","latte":"Latte",
+  "sedano":"Sedano","senape":"Senape","sesamo":"Sesamo","lupini":"Lupini","molluschi":"Molluschi",
+};
+const norm = a => NORMALIZE[a.toLowerCase()] || a;
+
+// Tab switch
+document.querySelectorAll(".tab-btn").forEach(btn => {
+  btn.addEventListener("click", () => {
+    document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
+    document.querySelectorAll(".view").forEach(v => {
+      v.classList.remove("active");
+      v.style.display = "none";
+    });
+    btn.classList.add("active");
+    const v = document.getElementById(`view-${btn.dataset.view}`);
+    v.style.display = "block";
+    // forza reflow per riavviare l'animazione fadeUp
+    void v.offsetWidth;
+    v.classList.add("active");
+  });
+});
+
+async function load() {
+  try {
+    const res = await fetch(`${API_BASE}/api/menu`);
+    if (!res.ok) throw new Error();
+    render(await res.json());
+  } catch {
+    document.getElementById("loading").innerHTML =
+      `<p class="state-msg">⚠️ Impossibile caricare i dati.<br>Riprova tra qualche istante.</p>`;
+  }
+}
+
+function render(data) {
+  document.getElementById("loading").style.display = "none";
+
+  const allItems = [
+    ...(data.pucciotti  || []),
+    ...(data.crocchette || []),
+  ];
+
+  const allergenSet = new Set();
+  allItems.forEach(it => (it.allergens || []).forEach(a => allergenSet.add(norm(a))));
+  const usedAllergens = [...allergenSet].sort();
+
+  // ── SCHEDE ──
+  document.getElementById("schede-content").innerHTML = allItems.map(item => {
+    const allergens = (item.allergens || []).map(norm);
+    return `
+      <div class="product-card">
+        <div class="product-top">
+          <span class="product-name">${item.name}</span>
+          <span class="product-cat">${CAT_LABEL[item.category] || item.category}</span>
+        </div>
+        ${allergens.length
+          ? `<div class="allergen-chips">${allergens.map(a => `<span class="chip">${a}</span>`).join("")}</div>`
+          : `<span class="no-allergens">Nessun allergene dichiarato</span>`}
+      </div>`;
+  }).join("");
+  document.getElementById("view-schede").classList.add("active");
+  document.getElementById("view-schede").style.display = "block";
+
+  // ── TABELLA ──
+  const tbl = document.getElementById("tabella-content");
+  tbl.innerHTML = `
+    <thead><tr>
+      <th>Prodotto</th>
+      ${usedAllergens.map(a => `<th>${a}</th>`).join("")}
+    </tr></thead>
+    <tbody>
+      ${allItems.map(item => {
+        const ia = (item.allergens || []).map(a => norm(a));
+        return `<tr>
+          <td><div class="item-name">${item.name}</div><div class="item-cat">${CAT_LABEL[item.category]||item.category}</div></td>
+          ${usedAllergens.map(a => `<td class="dot-cell">${ia.includes(a) ? '<span class="dot"></span>' : ''}</td>`).join("")}
+        </tr>`;
+      }).join("")}
+    </tbody>`;
+
+  // ── TABELLA MOBILE ──
+  document.getElementById("mobile-table-content").innerHTML = allItems.map(item => {
+    const allergens = (item.allergens || []).map(norm);
+    return `
+      <div class="mt-card">
+        <div class="mt-header">
+          <span class="mt-name">${item.name}</span>
+          <span class="mt-cat">${CAT_LABEL[item.category] || item.category}</span>
+        </div>
+        ${allergens.length
+          ? `<div class="mt-chips">${allergens.map(a => `<span class="mt-chip">${a}</span>`).join("")}</div>`
+          : `<span class="mt-none">Nessun allergene dichiarato</span>`}
+      </div>`;
+  }).join("");
+
+
+}
+
+load();
+</script>
+</body>
+</html>
