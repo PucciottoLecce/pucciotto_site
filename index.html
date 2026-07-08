@@ -238,7 +238,7 @@ async function loadCarousel() {
     }
     slides = items;
     buildCarousel();
-  } catch {}
+  } catch (e) {}
 }
 
 function buildCarousel() {
@@ -249,7 +249,7 @@ function buildCarousel() {
   slides.forEach((item, i) => {
     const cat = item.category || "pucciotti";
     const emoji = EMOJI[cat] || "🍽️";
-    const desc = item.ingredients?.join(", ") || "";
+    const desc = (item.ingredients && item.ingredients.join(", ")) || "";
 
     const slide = document.createElement("div");
     slide.className = "carousel-slide";

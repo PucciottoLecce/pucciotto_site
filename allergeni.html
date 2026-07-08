@@ -238,7 +238,7 @@ async function load() {
     const res = await fetch(`${API_BASE}/api/menu`);
     if (!res.ok) throw new Error();
     render(await res.json());
-  } catch {
+  } catch (e) {
     document.getElementById("loading").innerHTML =
       `<p class="state-msg">⚠️ Impossibile caricare i dati.<br>Riprova tra qualche istante.</p>`;
   }
