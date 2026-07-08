@@ -162,7 +162,7 @@ async function loadMenu() {
     const res = await fetch(`${API_BASE}/api/menu`);
     if (!res.ok) throw new Error();
     renderMenu(await res.json());
-  } catch {
+  } catch (e) {
     document.getElementById("loading").innerHTML =
       `<p class="state-msg">⚠️ Impossibile caricare il menù.<br>Riprova tra qualche istante.</p>`;
   }
@@ -175,7 +175,7 @@ function renderMenu(data) {
   const floatEl = document.getElementById("float-nav");
   wrap.style.display = "block";
 
-  const cats = Object.keys(CAT_META).filter(c => data[c]?.length);
+  const cats = Object.keys(CAT_META).filter(c => data[c] && data[c].length);
 
   cats.forEach((cat, i) => {
     const m = CAT_META[cat];
@@ -213,8 +213,8 @@ function renderMenu(data) {
           <div class="menu-card${item.is_available ? "" : " unavailable"}">
             <div class="card-info">
               <div class="card-name">${item.name}</div>
-              ${item.ingredients?.length ? `<div class="card-ingredients">${item.ingredients.join(", ")}</div>` : ""}
-              ${item.allergens?.length ? `<div class="card-allergens">${item.allergens.map(a => `<span class="allergen-tag">${a}</span>`).join("")}</div>` : ""}
+              ${item.ingredients && item.ingredients.length ? `<div class="card-ingredients">${item.ingredients.join(", ")}</div>` : ""}
+              ${item.allergens && item.allergens.length ? `<div class="card-allergens">${item.allergens.map(a => `<span class="allergen-tag">${a}</span>`).join("")}</div>` : ""}
             </div>
             <div class="card-right">
               <span class="card-price">€${parseFloat(item.price).toFixed(2)}</span>
