@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Il Progetto – Pucciotto</title>
+  <meta name="description" content="Pucciotto – Progetto realizzato con il contributo della Regione Puglia.">
+  <meta name="theme-color" content="#c0392b">
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link href="https://fonts.googleapis.com/css2?family=Lobster&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      --cream: #faf8f5; --white: #fff; --black: #1a1a1a;
+      --red: #c0392b; --red2: #a93226; --border: #e8e4e0; --muted: #999;
+    }
+    body { font-family: 'DM Sans', sans-serif; background: var(--cream); color: var(--black); min-height: 100vh; -webkit-font-smoothing: antialiased; }
+
+    .header {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(250,248,245,0.96); backdrop-filter: blur(14px);
+      border-bottom: 1px solid var(--border);
+      padding: 0 16px; height: 54px;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .header-brand { display: flex; align-items: center; text-decoration: none; }
+    .header-brand img { width: 140px; height: auto; display: block; }
+    .back-btn {
+      text-decoration: none; color: var(--muted); font-size: 13px; font-weight: 500;
+      display: flex; align-items: center; gap: 4px;
+      padding: 7px 14px; border-radius: 20px;
+      border: 1.5px solid var(--border); background: var(--white); transition: all 0.18s;
+    }
+    .back-btn:hover { color: var(--black); border-color: #bbb; }
+
+    .content { max-width: 720px; margin: 0 auto; padding: 28px 18px 80px; }
+
+    .hero-title { font-family: 'Lobster', cursive; font-size: 34px; color: var(--black); line-height: 1.1; margin-bottom: 10px; }
+    .hero-sub { font-size: 15px; color: var(--muted); line-height: 1.6; margin-bottom: 26px; }
+
+    .ph-note {
+      background: #fff7ed; border: 1.5px dashed #f0c987; color: #8a6d3b;
+      border-radius: 14px; padding: 12px 16px; font-size: 13px; line-height: 1.55;
+      margin-bottom: 26px;
+    }
+
+    .card {
+      background: var(--white); border: 1.5px solid var(--border); border-radius: 18px;
+      padding: 22px; box-shadow: 0 2px 10px rgba(0,0,0,0.04); margin-bottom: 16px;
+    }
+    .card h2 {
+      font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em;
+      color: var(--red); margin-bottom: 12px;
+    }
+    .card p { font-size: 14.5px; line-height: 1.7; color: #333; }
+    .card p + p { margin-top: 10px; }
+
+    .dl { display: grid; grid-template-columns: max-content 1fr; gap: 8px 18px; font-size: 14px; }
+    .dl dt { color: var(--muted); font-weight: 600; }
+    .dl dd { color: var(--black); }
+
+    /* Loghi istituzionali (segnaposto) */
+    .logos {
+      display: flex; flex-wrap: wrap; gap: 14px; align-items: center;
+      margin-top: 4px;
+    }
+    .logo-ph {
+      flex: 1 1 120px; min-width: 120px; height: 72px;
+      border: 1.5px dashed var(--border); border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      color: var(--muted); font-size: 11px; text-align: center; padding: 8px;
+      background: #fbfaf8;
+    }
+
+    .foot-note { font-size: 12px; color: var(--muted); text-align: center; margin-top: 24px; line-height: 1.6; }
+  </style>
+</head>
+<body>
+
+<header class="header">
+  <a href="index.html" class="header-brand"><img src="logo_text.svg" alt="Pucciotto"></a>
+  <a href="index.html" class="back-btn">← Indietro</a>
+</header>
+
+<main class="content">
+  <h1 class="hero-title">Il Progetto</h1>
+  <p class="hero-sub">Pucciotto nasce da un progetto realizzato con il contributo di enti e fondi pubblici.</p>
+
+  <div class="ph-note">
+    ✏️ <b>Contenuti segnaposto.</b> Sostituisci i testi e i loghi qui sotto con i dati reali del bando/progetto (denominazione, ente, fondo, importo, riferimenti).
+  </div>
+
+  <div class="card">
+    <h2>Descrizione del progetto</h2>
+    <p>[Inserire qui una descrizione del progetto: obiettivi, attività, risultati attesi e ricadute sul territorio.]</p>
+    <p>[Eventuale secondo paragrafo con ulteriori dettagli.]</p>
+  </div>
+
+  <div class="card">
+    <h2>Dati del finanziamento</h2>
+    <dl class="dl">
+      <dt>Ente</dt><dd>[Regione Puglia]</dd>
+      <dt>Programma / Fondo</dt><dd>[Es. Fondo … / Avviso …]</dd>
+      <dt>Titolo intervento</dt><dd>[Denominazione del progetto]</dd>
+      <dt>Importo</dt><dd>[€ …]</dd>
+      <dt>Codice / CUP</dt><dd>[…]</dd>
+      <dt>Periodo</dt><dd>[…]</dd>
+    </dl>
+  </div>
+
+  <div class="card">
+    <h2>Con il contributo di</h2>
+    <div class="logos">
+      <div class="logo-ph">Logo<br>Regione Puglia</div>
+      <div class="logo-ph">Logo<br>Fondo / Programma</div>
+      <div class="logo-ph">Logo<br>Unione Europea</div>
+    </div>
+  </div>
+
+  <p class="foot-note">Pagina informativa del progetto. I contenuti definitivi verranno inseriti a breve.</p>
+</main>
+
+</body>
+</html>
