@@ -155,38 +155,44 @@
     .btn-dark { background: var(--black); color: #fff; box-shadow: 0 4px 16px rgba(0,0,0,0.18); }
     .btn-dark:hover { background: #2d2d2d; }
 
-    /* ── Pulsanti fluttuanti tondi (Quiz / Gioco) ── */
-    .fab {
-      position: absolute; z-index: 55; top: 50%; transform: translateY(-50%);
-      display: flex; flex-direction: column; align-items: center; gap: 6px;
-      text-decoration: none;
+    /* ── Semicerchi laterali (Quiz / Gioco) ── */
+    .side-tab {
+      position: fixed; z-index: 55; top: 50%;
+      width: 96px; height: 210px;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      gap: 7px; color: #fff; text-decoration: none;
+      box-shadow: 0 12px 34px rgba(0,0,0,0.28);
+      transition: transform 0.28s cubic-bezier(.22,1,.36,1), filter 0.2s;
+      -webkit-tap-highlight-color: transparent;
     }
-    .fab-left  { left: clamp(14px, 7vw, 120px); }
-    .fab-right { right: clamp(14px, 7vw, 120px); }
-    .fab-circle {
-      width: 66px; height: 66px; border-radius: 50%;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 30px; color: #fff;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.26);
-      transition: transform 0.16s, box-shadow 0.16s, filter 0.16s;
+    .side-left {
+      left: 0; transform: translateY(-50%);
+      border-radius: 0 210px 210px 0 / 0 105px 105px 0;
+      background: var(--red); padding-right: 6px;
     }
-    .fab-left  .fab-circle { background: var(--red); box-shadow: 0 8px 24px rgba(192,57,43,0.42); }
-    .fab-right .fab-circle { background: linear-gradient(135deg, #f7b733, #e67e22); }
-    .fab:hover .fab-circle { transform: translateY(-3px); box-shadow: 0 12px 30px rgba(0,0,0,0.3); }
-    .fab-right:hover .fab-circle { filter: brightness(1.05); }
-    .fab:active .fab-circle { transform: scale(0.95); }
-    .fab-cap {
-      font-size: 10.5px; font-weight: 700; color: var(--black);
-      background: rgba(255,255,255,0.86); backdrop-filter: blur(6px);
-      padding: 3px 9px; border-radius: 20px; text-align: center; line-height: 1.2;
-      max-width: 92px; box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    .side-right {
+      right: 0; transform: translateY(-50%);
+      border-radius: 210px 0 0 210px / 105px 0 0 105px;
+      background: linear-gradient(135deg, #f7b733, #e67e22); padding-left: 6px;
     }
+    .side-ico { font-size: 36px; line-height: 1; }
+    .side-label { font-size: 12px; font-weight: 700; text-align: center; line-height: 1.15; max-width: 78px; }
+    .side-arrow { font-size: 22px; font-weight: 700; opacity: 0; transition: opacity 0.2s, transform 0.2s; }
+    .side-left  .side-arrow { transform: translateX(-6px); }
+    .side-right .side-arrow { transform: translateX(6px); }
+    /* PC: al passaggio del mouse la linguetta si allarga e compare la freccia */
+    @media (hover: hover) and (pointer: fine) {
+      .side-left:hover  { transform: translateY(-50%) translateX(8px); filter: brightness(1.05); }
+      .side-right:hover { transform: translateY(-50%) translateX(-8px); filter: brightness(1.05); }
+      .side-tab:hover .side-arrow { opacity: 1; transform: translateX(0); }
+    }
+    .side-tab:active { filter: brightness(0.96); }
+    /* Mobile: semicerchio piu' piccolo, si attiva con tap o swipe verso il centro */
     @media (max-width: 640px) {
-      /* su telefono le alzo per non coprire il carosello, restano fisse */
-      .fab { top: 30%; }
-      .fab-circle { width: 58px; height: 58px; font-size: 26px; }
-      .fab-left { left: clamp(9px, 4vw, 40px); } .fab-right { right: clamp(9px, 4vw, 40px); }
-      .fab-cap { font-size: 10px; max-width: 84px; }
+      .side-tab { width: 76px; height: 168px; }
+      .side-ico { font-size: 30px; }
+      .side-label { font-size: 10.5px; max-width: 62px; }
+      .side-arrow { opacity: 0.85; }
     }
 
     /* ── SOCIAL BAR ── */
@@ -373,13 +379,15 @@
 </div>
 
 <!-- Pulsanti fluttuanti -->
-<a href="https://quiz.pucciotto.it" target="_blank" rel="noopener" class="fab fab-left" aria-label="Partecipa al quiz">
-  <span class="fab-circle">🧠</span>
-  <span class="fab-cap">Quiz</span>
+<a href="https://quiz.pucciotto.it" target="_blank" rel="noopener" class="side-tab side-left" aria-label="Partecipa al quiz">
+  <span class="side-ico">🧠</span>
+  <span class="side-label">Quiz</span>
+  <span class="side-arrow" aria-hidden="true">→</span>
 </a>
-<a href="https://pucciotto2077.pages.dev/" target="_blank" rel="noopener" class="fab fab-right" aria-label="Pucciotto Heist – gioco a premi">
-  <span class="fab-circle">🎮</span>
-  <span class="fab-cap">Divertiti a vincere</span>
+<a href="https://pucciotto2077.pages.dev/" target="_blank" rel="noopener" class="side-tab side-right" aria-label="Pucciotto Heist – gioco a premi">
+  <span class="side-ico">🎮</span>
+  <span class="side-label">Divertiti a vincere</span>
+  <span class="side-arrow" aria-hidden="true">←</span>
 </a>
 
 <script>
@@ -486,6 +494,26 @@ function startAuto() {
 }
 
 loadCarousel();
+
+// Swipe verso il centro sui semicerchi laterali (in aggiunta al tap)
+(function initSideTabs() {
+  document.querySelectorAll(".side-tab").forEach(tab => {
+    const dir = tab.classList.contains("side-left") ? 1 : -1; // sx: swipe →, dx: swipe ←
+    let x0 = null, y0 = null, done = false;
+    tab.addEventListener("touchstart", e => {
+      const t = e.touches[0]; x0 = t.clientX; y0 = t.clientY; done = false;
+    }, { passive: true });
+    tab.addEventListener("touchmove", e => {
+      if (x0 === null || done) return;
+      const t = e.touches[0], dx = t.clientX - x0, dy = t.clientY - y0;
+      if (Math.abs(dx) > Math.abs(dy) && dx * dir > 50) {
+        done = true;
+        window.open(tab.href, "_blank", "noopener");
+      }
+    }, { passive: true });
+    tab.addEventListener("touchend", () => { x0 = null; }, { passive: true });
+  });
+})();
 </script>
 </body>
 </html>
