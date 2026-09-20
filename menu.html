@@ -76,13 +76,15 @@
       padding: 16px 18px;
       display: flex; align-items: flex-start; justify-content: space-between; gap: 14px;
       box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-      transition: border-color 0.18s, box-shadow 0.18s;
+      transition: border-color 0.18s, box-shadow 0.18s, transform 0.12s;
+      cursor: pointer;
     }
-    .menu-card:active { border-color: #d0ccc8; box-shadow: 0 4px 14px rgba(0,0,0,0.08); }
+    .menu-card:hover { border-color: #d0ccc8; box-shadow: 0 4px 14px rgba(0,0,0,0.08); }
+    .menu-card:active { transform: scale(0.99); border-color: #d0ccc8; box-shadow: 0 4px 14px rgba(0,0,0,0.08); }
     .menu-card.unavailable { opacity: 0.42; }
 
     .card-thumb {
-      width: 68px; height: 68px; flex-shrink: 0;
+      width: 68px; height: 68px; flex-shrink: 0; align-self: center;
       border-radius: 12px; object-fit: cover;
       background: #f0ece8; border: 1px solid var(--border);
     }
@@ -131,6 +133,58 @@
     .float-btn.active { background: var(--red); color: #fff; }
     .float-btn:hover:not(.active) { color: #fff; }
 
+    /* ── Scheda dettaglio (modal) ── */
+    .modal-overlay {
+      position: fixed; inset: 0; z-index: 300;
+      background: rgba(0,0,0,0.5);
+      display: flex; align-items: flex-end; justify-content: center;
+      opacity: 0; pointer-events: none; transition: opacity 0.25s;
+    }
+    .modal-overlay.open { opacity: 1; pointer-events: auto; }
+    .modal-sheet {
+      background: var(--white); width: 100%; max-width: 680px;
+      border-radius: 22px 22px 0 0; max-height: 92vh; overflow-y: auto;
+      transform: translateY(100%); transition: transform 0.32s cubic-bezier(.22,1,.36,1);
+      position: relative;
+      padding-bottom: calc(24px + env(safe-area-inset-bottom, 0px));
+      -webkit-overflow-scrolling: touch;
+    }
+    .modal-overlay.open .modal-sheet { transform: translateY(0); }
+    @media (min-width: 700px) {
+      .modal-overlay { align-items: center; padding: 24px; }
+      .modal-sheet { border-radius: 22px; transform: translateY(24px) scale(0.98); }
+      .modal-overlay.open .modal-sheet { transform: translateY(0) scale(1); }
+    }
+    .modal-close {
+      position: absolute; top: 12px; right: 12px; z-index: 3;
+      width: 34px; height: 34px; border-radius: 50%; border: none;
+      background: rgba(255,255,255,0.92); color: var(--black);
+      font-size: 15px; cursor: pointer; backdrop-filter: blur(6px);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.18);
+      display: flex; align-items: center; justify-content: center;
+    }
+    .modal-img-wrap { width: 100%; }
+    .modal-img-wrap img { width: 100%; height: 240px; object-fit: cover; display: block; border-radius: 22px 22px 0 0; }
+    @media (min-width: 700px) { .modal-img-wrap img { border-radius: 22px 22px 0 0; } }
+    .modal-body { padding: 20px; }
+    .modal-body.no-img { padding-top: 34px; }
+    .modal-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+    .modal-name { font-family: 'Lobster', cursive; font-size: 26px; font-weight: 400; line-height: 1.15; }
+    .modal-price { font-family: 'Lobster', cursive; font-size: 26px; color: var(--red); flex-shrink: 0; }
+    .modal-cat {
+      display: inline-block; margin-top: 10px;
+      font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em;
+      background: #fff3f2; color: var(--red); padding: 4px 12px; border-radius: 20px;
+    }
+    .modal-unavail {
+      display: inline-block; margin-top: 10px; margin-left: 6px;
+      font-size: 11px; font-weight: 600; text-transform: uppercase;
+      background: #f5f3f0; color: var(--muted); padding: 4px 12px; border-radius: 20px;
+    }
+    .modal-section { margin-top: 18px; }
+    .modal-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); margin-bottom: 6px; }
+    .modal-text { font-size: 14px; line-height: 1.65; color: #333; }
+
     @keyframes spin { to { transform: rotate(360deg); } }
     @keyframes fadeUp { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
   </style>
@@ -153,6 +207,8 @@
 </main>
 
 <nav class="float-nav" id="float-nav"></nav>
+
+<div class="modal-overlay" id="detail-modal"><div class="modal-sheet"></div></div>
 
 <script>
 const API_BASE = "https://orderpucciotto.onrender.com";
@@ -243,6 +299,11 @@ function renderMenu(data) {
         }).join("")}
       </div>`;
     wrap.appendChild(sec);
+
+    // rende ogni card cliccabile → apre la scheda dettaglio
+    sec.querySelectorAll(".menu-card").forEach((cardEl, idx) => {
+      cardEl.addEventListener("click", () => openDetail(items[idx], cat));
+    });
   });
 
   // float nav visibility — attiva solo dopo paint
@@ -253,6 +314,52 @@ function renderMenu(data) {
     observer.observe(tabsEl);
   });
 }
+
+// ── Scheda dettaglio prodotto ──
+function openDetail(item, cat) {
+  const modal = document.getElementById("detail-modal");
+  const sheet = modal.querySelector(".modal-sheet");
+  const img = itemImage(item);
+  const m = CAT_META[cat] || {};
+  const ingr = item.ingredients && item.ingredients.length ? item.ingredients.join(", ") : "";
+  const allergens = item.allergens || [];
+  const desc = item.description || item.desc || "";
+
+  sheet.innerHTML = `
+    <button class="modal-close" aria-label="Chiudi">✕</button>
+    ${img ? `<div class="modal-img-wrap"><img src="${img}" alt="${item.name}" onerror="this.closest('.modal-img-wrap').remove()"></div>` : ""}
+    <div class="modal-body${img ? "" : " no-img"}">
+      <div class="modal-head">
+        <h3 class="modal-name">${item.name}</h3>
+        <span class="modal-price">€${parseFloat(item.price).toFixed(2)}</span>
+      </div>
+      <div>
+        ${m.label ? `<span class="modal-cat">${m.icon || ""} ${m.label}</span>` : ""}
+        ${!item.is_available ? `<span class="modal-unavail">Non disponibile</span>` : ""}
+      </div>
+      ${desc ? `<div class="modal-section"><div class="modal-label">Descrizione</div><p class="modal-text">${desc}</p></div>` : ""}
+      ${ingr ? `<div class="modal-section"><div class="modal-label">Ingredienti</div><p class="modal-text">${ingr}</p></div>` : ""}
+      ${allergens.length ? `<div class="modal-section"><div class="modal-label">Allergeni</div><div class="card-allergens">${allergens.map(a => `<span class="allergen-tag">${a}</span>`).join("")}</div></div>` : ""}
+    </div>`;
+
+  sheet.querySelector(".modal-close").addEventListener("click", closeDetail);
+  sheet.scrollTop = 0;
+  modal.classList.add("open");
+  document.body.style.overflow = "hidden";
+}
+
+function closeDetail() {
+  document.getElementById("detail-modal").classList.remove("open");
+  document.body.style.overflow = "";
+}
+
+// chiusura: click sullo sfondo o tasto Esc
+document.getElementById("detail-modal").addEventListener("click", e => {
+  if (e.target.id === "detail-modal") closeDetail();
+});
+document.addEventListener("keydown", e => {
+  if (e.key === "Escape") closeDetail();
+});
 
 function switchTab(cat) {
   document.querySelectorAll(".tab-btn,.float-btn").forEach(b => b.classList.toggle("active", b.dataset.cat === cat));
