@@ -164,6 +164,7 @@
       box-shadow: 0 12px 34px rgba(0,0,0,0.28);
       transition: transform 0.28s cubic-bezier(.22,1,.36,1), filter 0.2s;
       -webkit-tap-highlight-color: transparent;
+      touch-action: none; /* i gesti sul semicerchio li gestiamo noi (swipe) */
     }
     .side-left {
       left: 0; transform: translateY(-50%);
@@ -187,12 +188,13 @@
       .side-tab:hover .side-arrow { opacity: 1; transform: translateX(0); }
     }
     .side-tab:active { filter: brightness(0.96); }
-    /* Mobile: semicerchio piu' piccolo, si attiva con tap o swipe verso il centro */
+    /* Mobile: semicerchio piu' piccolo e piu' in alto (zona logo, lati liberi),
+       si attiva con tap o swipe verso il centro */
     @media (max-width: 640px) {
-      .side-tab { width: 76px; height: 168px; }
-      .side-ico { font-size: 30px; }
-      .side-label { font-size: 10.5px; max-width: 62px; }
-      .side-arrow { opacity: 0.85; }
+      .side-tab { width: 60px; height: 130px; top: 26%; }
+      .side-ico { font-size: 25px; }
+      .side-label { font-size: 9.5px; max-width: 50px; }
+      .side-arrow { opacity: 0.85; font-size: 18px; }
     }
 
     /* ── SOCIAL BAR ── */
@@ -495,23 +497,25 @@ function startAuto() {
 
 loadCarousel();
 
-// Swipe verso il centro sui semicerchi laterali (in aggiunta al tap)
+// Swipe verso il centro sui semicerchi laterali (in aggiunta al tap).
+// Uso tab.click() (apertura affidabile in nuova scheda) e touch-action:none nel CSS
+// per intercettare il gesto prima del browser.
 (function initSideTabs() {
   document.querySelectorAll(".side-tab").forEach(tab => {
     const dir = tab.classList.contains("side-left") ? 1 : -1; // sx: swipe →, dx: swipe ←
-    let x0 = null, y0 = null, done = false;
+    let x0 = null, y0 = null, moved = false;
     tab.addEventListener("touchstart", e => {
-      const t = e.touches[0]; x0 = t.clientX; y0 = t.clientY; done = false;
+      const t = e.touches[0]; x0 = t.clientX; y0 = t.clientY; moved = false;
     }, { passive: true });
     tab.addEventListener("touchmove", e => {
-      if (x0 === null || done) return;
+      if (x0 === null) return;
       const t = e.touches[0], dx = t.clientX - x0, dy = t.clientY - y0;
-      if (Math.abs(dx) > Math.abs(dy) && dx * dir > 50) {
-        done = true;
-        window.open(tab.href, "_blank", "noopener");
-      }
+      if (Math.abs(dx) > Math.abs(dy) && dx * dir > 40) moved = true;
     }, { passive: true });
-    tab.addEventListener("touchend", () => { x0 = null; }, { passive: true });
+    tab.addEventListener("touchend", () => {
+      if (moved) tab.click(); // swipe valido → apre il sito come un tap
+      x0 = null; moved = false;
+    }, { passive: true });
   });
 })();
 </script>
