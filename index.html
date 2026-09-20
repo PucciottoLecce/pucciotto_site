@@ -228,6 +228,43 @@
       .radio-btn { padding: 9px; }
     }
 
+    /* Pannello radio incorporato */
+    .radio-panel {
+      position: fixed; z-index: 60; top: 62px; right: 14px;
+      width: 360px; max-width: calc(100vw - 28px);
+      height: 560px; max-height: calc(100vh - 84px);
+      background: #111; border-radius: 18px; overflow: hidden;
+      border: 1px solid rgba(255,255,255,0.08);
+      box-shadow: 0 18px 50px rgba(0,0,0,0.42);
+      display: none; flex-direction: column;
+    }
+    .radio-panel.open { display: flex; animation: popIn 0.2s ease both; }
+    @keyframes popIn { from { opacity: 0; transform: translateY(-8px) scale(0.98); } to { opacity: 1; transform: none; } }
+    .radio-panel-head {
+      display: flex; align-items: center; gap: 8px;
+      padding: 10px 12px; background: #1a1a1a; color: #fff;
+      font-size: 13px; font-weight: 600; flex-shrink: 0;
+    }
+    .radio-panel-title { flex: 1; }
+    .radio-panel-open, .radio-panel-close {
+      width: 28px; height: 28px; border-radius: 50%; border: none; cursor: pointer;
+      background: rgba(255,255,255,0.12); color: #fff; font-size: 13px;
+      display: flex; align-items: center; justify-content: center; text-decoration: none;
+      flex-shrink: 0; transition: background 0.15s;
+    }
+    .radio-panel-open:hover, .radio-panel-close:hover { background: rgba(255,255,255,0.24); }
+    .radio-panel-body { flex: 1; min-height: 0; background: #111; }
+    .radio-panel-body iframe { width: 100%; height: 100%; border: 0; display: block; }
+    .radio-panel-msg { color: rgba(255,255,255,0.7); font-size: 12.5px; line-height: 1.6; padding: 18px; text-align: center; }
+    .radio-panel-msg a { color: #ff8a7a; }
+    @media (max-width: 480px) {
+      .radio-panel {
+        top: auto; bottom: 0; right: 0; left: 0;
+        width: 100%; max-width: 100%; height: 80vh;
+        border-radius: 18px 18px 0 0;
+      }
+    }
+
     @keyframes fadeUp { from { opacity:0; transform:translateY(14px); } to { opacity:1; transform:translateY(0); } }
     @keyframes slideIn { from { opacity:0; transform:translateX(20px); } to { opacity:1; transform:translateX(0); } }
   </style>
@@ -247,7 +284,16 @@
     <span class="radio-label">Radio Pucciotto</span>
     <span class="radio-eq"><i></i><i></i><i></i></span>
   </button>
-  <audio id="radio-audio" preload="none"></audio>
+</div>
+
+<!-- Pannello Radio (mini-player incorporato) -->
+<div class="radio-panel" id="radio-panel" aria-hidden="true">
+  <div class="radio-panel-head">
+    <span class="radio-panel-title">📻 Radio Pucciotto</span>
+    <a class="radio-panel-open" id="radio-panel-open" href="https://radio.pucciotto.it/" target="_blank" rel="noopener" title="Apri a schermo intero">↗</a>
+    <button class="radio-panel-close" id="radio-panel-close" aria-label="Chiudi">✕</button>
+  </div>
+  <div class="radio-panel-body" id="radio-panel-body"></div>
 </div>
 
 <div class="hero">
@@ -299,36 +345,52 @@
 const API_BASE = "https://orderpucciotto.onrender.com";
 const EMOJI = { pucciotti: "🥙", crocchette: "🥔" };
 
-// ── Radio Pucciotto ──
+// ── Radio Pucciotto (mini-player incorporato via iframe) ──
 const RADIO_SITE = "https://radio.pucciotto.it/";
-// ⬇️ INCOLLA QUI l'URL diretto dello STREAM audio (es. https://radio.pucciotto.it/listen/.../radio.mp3)
-// Se resta vuoto, il pulsante apre il sito della radio in una nuova scheda.
-const RADIO_STREAM = "";
 
 (function initRadio() {
-  const btn = document.getElementById("radio-btn");
-  const ico = document.getElementById("radio-ico");
-  const audio = document.getElementById("radio-audio");
-  if (!btn) return;
+  const btn   = document.getElementById("radio-btn");
+  const ico   = document.getElementById("radio-ico");
+  const panel = document.getElementById("radio-panel");
+  const body  = document.getElementById("radio-panel-body");
+  const close = document.getElementById("radio-panel-close");
+  if (!btn || !panel) return;
 
-  function setState(state) {
-    btn.classList.toggle("playing", state === "playing");
-    btn.classList.toggle("loading", state === "loading");
-    ico.textContent = state === "loading" ? "…" : (state === "playing" ? "⏸" : "▶");
+  function openRadio() {
+    if (!body.querySelector("iframe")) {
+      const f = document.createElement("iframe");
+      f.src = RADIO_SITE;
+      f.title = "Radio Pucciotto";
+      f.allow = "autoplay; encrypted-media; fullscreen";
+      f.loading = "eager";
+      // Se il sito radio vieta l'incorporamento, mostro un fallback
+      f.addEventListener("error", showBlocked);
+      body.appendChild(f);
+    }
+    panel.classList.add("open");
+    panel.setAttribute("aria-hidden", "false");
+    btn.classList.add("playing");
+    ico.textContent = "⏸";
   }
-  function openSite() { window.open(RADIO_SITE, "_blank", "noopener"); }
+
+  function closeRadio() {
+    panel.classList.remove("open");
+    panel.setAttribute("aria-hidden", "true");
+    btn.classList.remove("playing");
+    ico.textContent = "▶";
+    body.innerHTML = ""; // ferma l'audio staccando l'iframe
+  }
+
+  function showBlocked() {
+    body.innerHTML =
+      '<div class="radio-panel-msg">Impossibile mostrare la radio qui dentro.<br>' +
+      '<a href="' + RADIO_SITE + '" target="_blank" rel="noopener">Apri Radio Pucciotto ↗</a></div>';
+  }
 
   btn.addEventListener("click", () => {
-    if (!RADIO_STREAM) { openSite(); return; }
-    if (!audio.paused) { audio.pause(); return; }
-    setState("loading");
-    if (!audio.src) audio.src = RADIO_STREAM;
-    audio.play().catch(() => { setState("idle"); openSite(); });
+    panel.classList.contains("open") ? closeRadio() : openRadio();
   });
-
-  audio.addEventListener("playing", () => setState("playing"));
-  audio.addEventListener("pause",   () => setState("idle"));
-  audio.addEventListener("error",   () => { setState("idle"); openSite(); });
+  close.addEventListener("click", closeRadio);
 })();
 
 // Ricava l'URL immagine di un prodotto dal DB, provando i nomi di campo piu comuni.
