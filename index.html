@@ -151,28 +151,36 @@
     .btn-dark { background: var(--black); color: #fff; box-shadow: 0 4px 16px rgba(0,0,0,0.18); }
     .btn-dark:hover { background: #2d2d2d; }
 
-    /* ── Pulsanti fluttuanti (Quiz / Gioco) ── */
+    /* ── Pulsanti fluttuanti tondi (Quiz / Gioco) ── */
     .fab {
-      position: fixed; z-index: 55;
-      bottom: calc(78px + env(safe-area-inset-bottom, 0px));
-      display: flex; align-items: center; gap: 8px;
-      text-decoration: none; color: #fff;
-      padding: 11px 16px; border-radius: 40px;
-      font-size: 13px; font-weight: 700;
-      box-shadow: 0 6px 20px rgba(0,0,0,0.24);
-      transition: transform 0.15s, box-shadow 0.15s, filter 0.15s;
+      position: fixed; z-index: 55; top: 50%; transform: translateY(-50%);
+      display: flex; flex-direction: column; align-items: center; gap: 6px;
+      text-decoration: none;
     }
-    .fab:hover { transform: translateY(-2px); box-shadow: 0 9px 26px rgba(0,0,0,0.28); }
-    .fab:active { transform: translateY(0) scale(0.97); }
-    .fab-left  { left: 14px;  background: var(--red); box-shadow: 0 6px 20px rgba(192,57,43,0.34); }
-    .fab-right { right: 14px; background: linear-gradient(135deg, #f7b733, #e67e22); }
-    .fab-right:hover { filter: brightness(1.04); }
-    .fab-ico { font-size: 17px; line-height: 1; }
-    .fab-stack { display: flex; flex-direction: column; line-height: 1.1; }
-    .fab-stack small { font-size: 10.5px; font-weight: 500; opacity: 0.92; }
+    .fab-left  { left: 12px; }
+    .fab-right { right: 12px; }
+    .fab-circle {
+      width: 66px; height: 66px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 30px; color: #fff;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.26);
+      transition: transform 0.16s, box-shadow 0.16s, filter 0.16s;
+    }
+    .fab-left  .fab-circle { background: var(--red); box-shadow: 0 8px 24px rgba(192,57,43,0.42); }
+    .fab-right .fab-circle { background: linear-gradient(135deg, #f7b733, #e67e22); }
+    .fab:hover .fab-circle { transform: translateY(-3px); box-shadow: 0 12px 30px rgba(0,0,0,0.3); }
+    .fab-right:hover .fab-circle { filter: brightness(1.05); }
+    .fab:active .fab-circle { transform: scale(0.95); }
+    .fab-cap {
+      font-size: 10.5px; font-weight: 700; color: var(--black);
+      background: rgba(255,255,255,0.86); backdrop-filter: blur(6px);
+      padding: 3px 9px; border-radius: 20px; text-align: center; line-height: 1.2;
+      max-width: 92px; box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
     @media (max-width: 430px) {
-      .fab { bottom: calc(70px + env(safe-area-inset-bottom, 0px)); padding: 11px 13px; font-size: 12.5px; }
-      .fab-stack small { font-size: 10px; }
+      .fab-circle { width: 58px; height: 58px; font-size: 26px; }
+      .fab-left { left: 9px; } .fab-right { right: 9px; }
+      .fab-cap { font-size: 10px; max-width: 84px; }
     }
 
     /* ── SOCIAL BAR ── */
@@ -373,11 +381,12 @@
 
 <!-- Pulsanti fluttuanti -->
 <a href="https://quiz.pucciotto.it" target="_blank" rel="noopener" class="fab fab-left" aria-label="Partecipa al quiz">
-  <span class="fab-ico">🧠</span><span class="fab-text">Quiz</span>
+  <span class="fab-circle">🧠</span>
+  <span class="fab-cap">Quiz</span>
 </a>
 <a href="https://pucciotto2077.pages.dev/" target="_blank" rel="noopener" class="fab fab-right" aria-label="Pucciotto Heist – gioco a premi">
-  <span class="fab-ico">🎮</span>
-  <span class="fab-stack"><b>Pucciotto Heist</b><small>Divertiti a vincere</small></span>
+  <span class="fab-circle">🎮</span>
+  <span class="fab-cap">Divertiti a vincere</span>
 </a>
 
 <script>
