@@ -4,273 +4,51 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>Pucciotto – La puccia 2.0</title>
-  <meta name="description" content="Pucciotto – La puccia 2.0. Scopri il menù, gli allergeni e ordina online.">
-  <meta property="og:title" content="Pucciotto – La puccia 2.0">
-  <meta property="og:description" content="La puccia reinterpretata. Scopri il menù e ordina online.">
-  <meta property="og:type" content="website">
+  <meta name="description" content="Pucciotto – La puccia 2.0. Scopri il menù, gli allergeni, la radio e i giochi.">
   <meta name="theme-color" content="#c0392b">
   <link rel="icon" type="image/svg+xml" href="favicon.svg">
-  <link href="https://fonts.googleapis.com/css2?family=Lobster&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&display=swap" rel="stylesheet">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,500;9..40,600;9..40,700&display=swap" rel="stylesheet">
   <style>
     *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
-    :root {
-      --cream: #faf8f5;
-      --white: #ffffff;
-      --black: #1a1a1a;
-      --red:   #c0392b;
-      --red2:  #a93226;
-      --border: #e8e4e0;
-      --muted: #999;
-      --card-bg: #ffffff;
-    }
-
+    :root { --cream: #faf8f5; --red: #c0392b; --red2: #a93226; --border: #e8e4e0; }
     html, body { height: 100%; }
-    html {
-      /* immagine + velo crema, entrambi fissi al viewport: coprono sempre
-         tutta l'area, anche scrollando in fondo */
-      background:
-        linear-gradient(rgba(250,248,245,0.80), rgba(250,248,245,0.90)) fixed,
-        url('sfondo.jpg') center center / cover no-repeat fixed;
-      background-color: var(--cream);
-    }
-    body {
-      font-family: 'DM Sans', sans-serif;
-      background: transparent;
-      position: relative;
-      color: var(--black);
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      -webkit-font-smoothing: antialiased;
+    body { background: var(--cream); overflow: hidden; font-family: 'DM Sans', sans-serif; }
+
+    /* Contenuto: le pagine del sito vengono caricate qui dentro */
+    .view {
+      position: fixed; inset: 0;
+      width: 100%; height: 100%;
+      border: 0; display: block;
     }
 
-    /* ── HERO ── */
-    .hero {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      padding: 32px 20px 0;
-      animation: fadeUp 0.5s ease both;
+    /* ── Pulsante radio persistente (sempre disponibile) ── */
+    .radio-fab {
+      position: fixed; z-index: 60;
+      right: 16px; bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+      width: 56px; height: 56px; border-radius: 50%;
+      border: none; cursor: pointer; color: #fff; background: var(--red);
+      box-shadow: 0 6px 20px rgba(192,57,43,0.42);
+      display: flex; align-items: center; justify-content: center; gap: 3px;
+      font-size: 19px; transition: transform 0.15s, background 0.18s;
     }
-
-    .logo-wrap {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin-bottom: 16px;
-    }
-    .logo-wrap img { width: 160px; height: auto; display: block; }
-
-    .tagline {
-      font-size: 12px; font-weight: 500;
-      letter-spacing: 0.22em; text-transform: uppercase;
-      color: var(--muted);
-      margin-bottom: 28px;
-    }
-
-    .tagline {
-      font-size: 12px; font-weight: 500;
-      letter-spacing: 0.22em; text-transform: uppercase;
-      color: var(--muted);
-      margin-bottom: 28px;
-    }
-
-    /* ── CAROUSEL ── */
-    .carousel-wrap {
-      width: 100%; max-width: 420px;
-      margin-bottom: 28px;
-      position: relative;
-    }
-    .carousel-track {
-      display: flex;
-      overflow: hidden;
-      border-radius: 18px;
-      box-shadow: 0 6px 24px rgba(0,0,0,0.1);
-    }
-    .carousel-slide {
-      min-width: 100%;
-      background: var(--white);
-      border: 1.5px solid var(--border);
-      border-radius: 18px;
-      padding: 20px;
-      display: flex; align-items: center; gap: 16px;
-      animation: fadeSlide 0.35s ease both;
-    }
-    @keyframes fadeSlide { from { opacity:0; transform:translateX(10px); } to { opacity:1; transform:translateX(0); } }
-    .slide-emoji { font-size: 40px; flex-shrink: 0; }
-    .slide-thumb {
-      width: 60px; height: 60px; flex-shrink: 0;
-      border-radius: 12px; object-fit: cover;
-      background: #f0ece8; border: 1px solid var(--border);
-    }
-    .slide-info { flex: 1; min-width: 0; }
-    .slide-name { font-size: 17px; font-weight: 700; margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .slide-desc { font-size: 12px; color: var(--muted); line-height: 1.4; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
-    .slide-price {
-      font-family: 'Lobster', cursive;
-      font-size: 22px; color: var(--red);
-      flex-shrink: 0;
-    }
-    /* dots */
-    .carousel-dots {
-      display: flex; justify-content: center; gap: 6px;
-      margin-top: 10px;
-    }
-    .dot {
-      width: 6px; height: 6px; border-radius: 50%;
-      background: var(--border);
-      transition: all 0.25s;
-    }
-    .dot.active { background: var(--red); width: 18px; border-radius: 3px; }
-
-    /* ── NAV BUTTONS ── */
-    .nav-buttons {
-      display: flex; flex-direction: column; gap: 10px;
-      width: 100%; max-width: 420px;
-      padding: 0 0 12px;
-    }
-    .btn {
-      display: flex; align-items: center; justify-content: space-between;
-      text-decoration: none;
-      font-family: 'DM Sans', sans-serif;
-      font-weight: 600; font-size: 16px;
-      padding: 17px 20px;
-      border-radius: 16px;
-      border: 1.5px solid transparent;
-      transition: all 0.2s ease;
-    }
-    .btn-left { display: flex; align-items: center; gap: 12px; }
-    .btn-icon { font-size: 20px; }
-    .btn-arrow { font-size: 16px; opacity: 0.45; transition: transform 0.2s; }
-    .btn:hover .btn-arrow { transform: translateX(4px); opacity: 1; }
-
-    .btn-primary { background: var(--red); color: #fff; box-shadow: 0 4px 16px rgba(192,57,43,0.28); }
-    .btn-primary:hover { background: var(--red2); }
-
-    .btn-secondary { background: var(--white); color: var(--black); border-color: var(--border); box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
-    .btn-secondary:hover { border-color: #ccc; }
-
-    .btn-dark { background: var(--black); color: #fff; box-shadow: 0 4px 16px rgba(0,0,0,0.18); }
-    .btn-dark:hover { background: #2d2d2d; }
-
-    /* ── Pulsanti fluttuanti tondi (Quiz / Gioco) ── */
-    .fab {
-      position: absolute; z-index: 55; top: 50%; transform: translateY(-50%);
-      display: flex; flex-direction: column; align-items: center; gap: 6px;
-      text-decoration: none;
-    }
-    .fab-left  { left: clamp(14px, 7vw, 120px); }
-    .fab-right { right: clamp(14px, 7vw, 120px); }
-    .fab-circle {
-      width: 66px; height: 66px; border-radius: 50%;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 30px; color: #fff;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.26);
-      transition: transform 0.16s, box-shadow 0.16s, filter 0.16s;
-    }
-    .fab-left  .fab-circle { background: var(--red); box-shadow: 0 8px 24px rgba(192,57,43,0.42); }
-    .fab-right .fab-circle { background: linear-gradient(135deg, #f7b733, #e67e22); }
-    .fab:hover .fab-circle { transform: translateY(-3px); box-shadow: 0 12px 30px rgba(0,0,0,0.3); }
-    .fab-right:hover .fab-circle { filter: brightness(1.05); }
-    .fab:active .fab-circle { transform: scale(0.95); }
-    .fab-cap {
-      font-size: 10.5px; font-weight: 700; color: var(--black);
-      background: rgba(255,255,255,0.86); backdrop-filter: blur(6px);
-      padding: 3px 9px; border-radius: 20px; text-align: center; line-height: 1.2;
-      max-width: 92px; box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-    }
-    @media (max-width: 640px) {
-      /* su telefono le alzo per non coprire il carosello, restano fisse */
-      .fab { top: 30%; }
-      .fab-circle { width: 58px; height: 58px; font-size: 26px; }
-      .fab-left { left: clamp(9px, 4vw, 40px); } .fab-right { right: clamp(9px, 4vw, 40px); }
-      .fab-cap { font-size: 10px; max-width: 84px; }
-    }
-
-    /* ── SOCIAL BAR ── */
-    .social-bar {
-      padding: 16px 20px 24px;
-      display: flex; justify-content: center; align-items: center; gap: 20px;
-      width: 100%; max-width: 420px;
-      border-top: 1px solid var(--border);
-      margin-top: 4px;
-    }
-    .social-link {
-      display: flex; align-items: center; gap: 5px;
-      color: var(--muted); text-decoration: none;
-      font-size: 12px; font-weight: 500;
-      transition: color 0.2s;
-    }
-    .social-link:hover { color: var(--red); }
-    .social-link svg { width: 16px; height: 16px; fill: currentColor; }
-
-    /* ── TOP BAR (badge + radio) ── */
-    .topbar {
-      position: sticky; top: 0; z-index: 50;
-      display: flex; align-items: center; justify-content: space-between; gap: 10px;
-      width: 100%; padding: 12px 14px;
-    }
-    /* Badge progetto (segnaposto, cliccabile) */
-    .badge-slot {
-      display: flex; align-items: center; gap: 9px;
-      text-decoration: none; color: var(--black);
-      background: rgba(255,255,255,0.82); backdrop-filter: blur(8px);
-      border: 1.5px solid var(--border); border-radius: 14px;
-      padding: 7px 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.06);
-      transition: transform 0.15s, box-shadow 0.15s, border-color 0.15s;
-      max-width: 62vw;
-    }
-    .badge-slot:hover { transform: translateY(-1px); box-shadow: 0 4px 14px rgba(0,0,0,0.1); border-color: #d0ccc8; }
-    .badge-emoji { font-size: 20px; flex-shrink: 0; }
-    .badge-text { font-size: 10.5px; line-height: 1.25; color: var(--muted); font-weight: 500; }
-    .badge-text b { display: block; font-size: 12px; color: var(--black); font-weight: 700; }
-    .badge-ph { font-style: italic; opacity: 0.7; }
-
-    /* Player radio */
-    .radio-btn {
-      display: flex; align-items: center; gap: 8px;
-      font-family: 'DM Sans', sans-serif; font-weight: 600; font-size: 12.5px;
-      color: #fff; background: var(--red);
-      border: none; border-radius: 40px; cursor: pointer;
-      padding: 9px 14px 9px 11px;
-      box-shadow: 0 3px 12px rgba(192,57,43,0.3);
-      transition: background 0.18s, transform 0.12s;
-    }
-    .radio-btn:hover { background: var(--red2); }
-    .radio-btn:active { transform: scale(0.97); }
-    .radio-ico {
-      width: 22px; height: 22px; border-radius: 50%;
-      background: rgba(255,255,255,0.22);
-      display: flex; align-items: center; justify-content: center;
-      font-size: 11px; flex-shrink: 0;
-    }
-    .radio-label { white-space: nowrap; }
-    /* equalizer animato quando in play */
-    .radio-eq { display: none; align-items: flex-end; gap: 2px; height: 13px; }
-    .radio-btn.playing .radio-eq { display: flex; }
-    .radio-eq i {
-      width: 3px; background: #fff; border-radius: 2px;
-      animation: eq 0.8s ease-in-out infinite;
-    }
-    .radio-eq i:nth-child(1) { height: 6px;  animation-delay: 0s;    }
-    .radio-eq i:nth-child(2) { height: 13px; animation-delay: 0.2s;  }
-    .radio-eq i:nth-child(3) { height: 9px;  animation-delay: 0.4s;  }
+    .radio-fab:hover { background: var(--red2); transform: translateY(-2px); }
+    .radio-fab:active { transform: scale(0.95); }
+    .radio-ico { line-height: 1; }
+    .radio-eq { display: none; align-items: flex-end; gap: 2px; height: 17px; }
+    .radio-fab.playing .radio-eq { display: flex; }
+    .radio-fab.playing .radio-ico { display: none; }
+    .radio-eq i { width: 3px; background: #fff; border-radius: 2px; animation: eq 0.8s ease-in-out infinite; }
+    .radio-eq i:nth-child(1) { height: 7px;  animation-delay: 0s;   }
+    .radio-eq i:nth-child(2) { height: 17px; animation-delay: 0.2s; }
+    .radio-eq i:nth-child(3) { height: 11px; animation-delay: 0.4s; }
     @keyframes eq { 0%,100% { transform: scaleY(0.4); } 50% { transform: scaleY(1); } }
-    .radio-btn.loading .radio-ico { animation: pulse 0.9s ease-in-out infinite; }
-    @keyframes pulse { 0%,100% { opacity: 0.5; } 50% { opacity: 1; } }
 
-    @media (max-width: 380px) {
-      .radio-label { display: none; }
-      .radio-btn { padding: 9px; }
-    }
-
-    /* Pannello radio incorporato */
+    /* ── Pannello radio incorporato ── */
     .radio-panel {
-      position: fixed; z-index: 60; top: 62px; right: 14px;
+      position: fixed; z-index: 61; top: 62px; right: 16px;
       width: 340px; max-width: calc(100vw - 28px);
-      height: 600px; max-height: calc(100vh - 78px);
+      height: 600px; max-height: calc(100vh - 90px);
       background: #111; border-radius: 18px; overflow: hidden;
       border: 1px solid rgba(255,255,255,0.08);
       box-shadow: 0 18px 50px rgba(0,0,0,0.42);
@@ -292,8 +70,6 @@
     }
     .radio-panel-open:hover, .radio-panel-close:hover { background: rgba(255,255,255,0.24); }
     .radio-panel-body { flex: 1; min-height: 0; background: #111; overflow: hidden; position: relative; }
-    /* l'iframe viene reso a una dimensione logica maggiore e riscalato,
-       cosi' l'intero player della radio entra nel pannello senza scorrere */
     .radio-panel-body iframe {
       border: 0; display: block;
       width: 143%; height: 143%;
@@ -301,252 +77,83 @@
     }
     .radio-panel-msg { color: rgba(255,255,255,0.7); font-size: 12.5px; line-height: 1.6; padding: 18px; text-align: center; }
     .radio-panel-msg a { color: #ff8a7a; }
+
     @media (max-width: 480px) {
+      /* su smartphone finestra piccola, sopra il pulsante radio */
       .radio-panel {
         top: auto; left: auto;
-        bottom: calc(14px + env(safe-area-inset-bottom, 0px)); right: 12px;
+        bottom: calc(84px + env(safe-area-inset-bottom, 0px)); right: 12px;
         width: min(300px, calc(100vw - 24px));
-        height: 430px; max-height: calc(100vh - 90px);
+        height: 430px; max-height: calc(100vh - 120px);
         border-radius: 18px;
       }
     }
-
-    @keyframes fadeUp { from { opacity:0; transform:translateY(14px); } to { opacity:1; transform:translateY(0); } }
-    @keyframes slideIn { from { opacity:0; transform:translateX(20px); } to { opacity:1; transform:translateX(0); } }
   </style>
 </head>
 <body>
 
-<div class="topbar">
-  <!-- Badge progetto (SEGNAPOSTO) → pagina specifiche -->
-  <a href="progetto.html" class="badge-slot">
-    <span class="badge-emoji">🏛️</span>
-    <span class="badge-text"><span class="badge-ph">Progetto realizzato con</span><b>Regione Puglia</b></span>
-  </a>
+  <!-- Le pagine del sito vengono caricate qui; la radio sotto resta sempre attiva -->
+  <iframe id="view" class="view" src="home.html" title="Pucciotto" allow="autoplay; encrypted-media"></iframe>
 
-  <!-- Player Radio Pucciotto -->
-  <button class="radio-btn" id="radio-btn" aria-label="Ascolta Radio Pucciotto">
+  <!-- Radio persistente -->
+  <button class="radio-fab" id="radio-btn" aria-label="Radio Pucciotto">
     <span class="radio-ico" id="radio-ico">▶</span>
-    <span class="radio-label">Radio Pucciotto</span>
     <span class="radio-eq"><i></i><i></i><i></i></span>
   </button>
-</div>
 
-<!-- Pannello Radio (mini-player incorporato) -->
-<div class="radio-panel" id="radio-panel" aria-hidden="true">
-  <div class="radio-panel-head">
-    <span class="radio-panel-title">📻 Radio Pucciotto</span>
-    <a class="radio-panel-open" id="radio-panel-open" href="https://radio.pucciotto.it/" target="_blank" rel="noopener" title="Apri a schermo intero">↗</a>
-    <button class="radio-panel-close" id="radio-panel-close" aria-label="Chiudi">✕</button>
-  </div>
-  <div class="radio-panel-body" id="radio-panel-body"></div>
-</div>
-
-<div class="hero">
-  <div class="logo-wrap">
-    <img src="logol.svg" alt="Pucciotto">
+  <div class="radio-panel" id="radio-panel" aria-hidden="true">
+    <div class="radio-panel-head">
+      <span class="radio-panel-title">📻 Radio Pucciotto</span>
+      <a class="radio-panel-open" href="https://radio.pucciotto.it/" target="_blank" rel="noopener" title="Apri a schermo intero">↗</a>
+      <button class="radio-panel-close" id="radio-panel-close" aria-label="Chiudi">✕</button>
+    </div>
+    <div class="radio-panel-body" id="radio-panel-body"></div>
   </div>
 
-  <p class="tagline">La puccia 2.0</p>
+  <script>
+    // ── Radio Pucciotto: vive nel contenitore, non si ferma mai al cambio pagina ──
+    const RADIO_SITE = "https://radio.pucciotto.it/";
+    (function initRadio() {
+      const btn   = document.getElementById("radio-btn");
+      const ico   = document.getElementById("radio-ico");
+      const panel = document.getElementById("radio-panel");
+      const body  = document.getElementById("radio-panel-body");
+      const close = document.getElementById("radio-panel-close");
 
-  <!-- Carousel piatti -->
-  <div class="carousel-wrap" id="carousel-wrap" style="display:none">
-    <div class="carousel-track" id="carousel-track"></div>
-    <div class="carousel-dots" id="carousel-dots"></div>
-  </div>
+      function openRadio() {
+        if (!body.querySelector("iframe")) {
+          const f = document.createElement("iframe");
+          f.src = RADIO_SITE;
+          f.title = "Radio Pucciotto";
+          f.allow = "autoplay; encrypted-media; fullscreen";
+          f.loading = "eager";
+          f.addEventListener("error", showBlocked);
+          body.appendChild(f);
+        }
+        panel.classList.add("open");
+        panel.setAttribute("aria-hidden", "false");
+        btn.classList.add("playing"); // segnala che la radio e' accesa
+        ico.textContent = "⏸";
+      }
 
-  <!-- Nav -->
-  <nav class="nav-buttons">
-    <a href="menu.html" class="btn btn-primary">
-      <span class="btn-left"><span class="btn-icon">🥙</span>Menù</span>
-      <span class="btn-arrow">→</span>
-    </a>
-    <a href="allergeni.html" class="btn btn-secondary">
-      <span class="btn-left"><span class="btn-icon">⚠️</span>Allergeni</span>
-      <span class="btn-arrow">→</span>
-    </a>
-    <a href="https://order.pucciotto.it/ordini" class="btn btn-dark">
-      <span class="btn-left"><span class="btn-icon">🛒</span>Ordina ora</span>
-      <span class="btn-arrow">→</span>
-    </a>
-  </nav>
+      function closeRadio() {
+        // nasconde soltanto il pannello: l'iframe resta in vita e la radio
+        // continua a suonare in sottofondo
+        panel.classList.remove("open");
+        panel.setAttribute("aria-hidden", "true");
+      }
 
-  <div class="social-bar">
-    <a href="https://www.instagram.com/pucciotto_lecce/" target="_blank" class="social-link">
-      <svg viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
-      Instagram
-    </a>
-    <a href="https://www.facebook.com/pucciottolecce/" target="_blank" class="social-link">
-      <svg viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
-      Facebook
-    </a>
-    <a href="https://www.tiktok.com/@pucciotto_lecce" target="_blank" class="social-link">
-      <svg viewBox="0 0 24 24"><path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.63.41-1.11 1.04-1.36 1.75-.21.51-.15 1.07-.14 1.61.24 1.64 1.82 3.02 3.5 2.87 1.12-.01 2.19-.66 2.77-1.61.19-.33.4-.67.41-1.06.1-1.79.06-3.57.07-5.36.01-4.03-.01-8.05.02-12.07z"/></svg>
-      TikTok
-    </a>
-  </div>
-</div>
+      function showBlocked() {
+        body.innerHTML =
+          '<div class="radio-panel-msg">Impossibile mostrare la radio qui dentro.<br>' +
+          '<a href="' + RADIO_SITE + '" target="_blank" rel="noopener">Apri Radio Pucciotto ↗</a></div>';
+      }
 
-<!-- Pulsanti fluttuanti -->
-<a href="https://quiz.pucciotto.it" target="_blank" rel="noopener" class="fab fab-left" aria-label="Partecipa al quiz">
-  <span class="fab-circle">🧠</span>
-  <span class="fab-cap">Quiz</span>
-</a>
-<a href="https://pucciotto2077.pages.dev/" target="_blank" rel="noopener" class="fab fab-right" aria-label="Pucciotto Heist – gioco a premi">
-  <span class="fab-circle">🎮</span>
-  <span class="fab-cap">Divertiti a vincere</span>
-</a>
-
-<script>
-const API_BASE = "https://orderpucciotto.onrender.com";
-const EMOJI = { pucciotti: "🥙", crocchette: "🥔" };
-
-// ── Radio Pucciotto (mini-player incorporato via iframe) ──
-const RADIO_SITE = "https://radio.pucciotto.it/";
-
-(function initRadio() {
-  const btn   = document.getElementById("radio-btn");
-  const ico   = document.getElementById("radio-ico");
-  const panel = document.getElementById("radio-panel");
-  const body  = document.getElementById("radio-panel-body");
-  const close = document.getElementById("radio-panel-close");
-  if (!btn || !panel) return;
-
-  function openRadio() {
-    if (!body.querySelector("iframe")) {
-      const f = document.createElement("iframe");
-      f.src = RADIO_SITE;
-      f.title = "Radio Pucciotto";
-      f.allow = "autoplay; encrypted-media; fullscreen";
-      f.loading = "eager";
-      // Se il sito radio vieta l'incorporamento, mostro un fallback
-      f.addEventListener("error", showBlocked);
-      body.appendChild(f);
-    }
-    panel.classList.add("open");
-    panel.setAttribute("aria-hidden", "false");
-    btn.classList.add("playing");
-    ico.textContent = "⏸";
-  }
-
-  function closeRadio() {
-    // nasconde soltanto il pannello: l'iframe resta in vita e la radio
-    // continua a suonare in sottofondo. L'equalizer sul pulsante resta
-    // attivo per segnalare che la radio e' accesa.
-    panel.classList.remove("open");
-    panel.setAttribute("aria-hidden", "true");
-    ico.textContent = "▶";
-  }
-
-  function showBlocked() {
-    body.innerHTML =
-      '<div class="radio-panel-msg">Impossibile mostrare la radio qui dentro.<br>' +
-      '<a href="' + RADIO_SITE + '" target="_blank" rel="noopener">Apri Radio Pucciotto ↗</a></div>';
-  }
-
-  btn.addEventListener("click", () => {
-    panel.classList.contains("open") ? closeRadio() : openRadio();
-  });
-  close.addEventListener("click", closeRadio);
-})();
-
-// Ricava l'URL immagine di un prodotto dal DB, provando i nomi di campo piu comuni.
-function itemImage(item) {
-  const raw = item.image_url || item.image || item.img || item.photo
-    || item.image_path || item.thumbnail
-    || (Array.isArray(item.images) && item.images[0]) || "";
-  if (!raw) return "";
-  if (/^https?:\/\//i.test(raw)) return raw;
-  return API_BASE + (String(raw).startsWith("/") ? "" : "/") + raw;
-}
-
-let slides = [];
-let current = 0;
-let timer = null;
-
-async function loadCarousel() {
-  try {
-    const res = await fetch(`${API_BASE}/api/menu`);
-    if (!res.ok) return;
-    const data = await res.json();
-
-    // Merge pucciotti + crocchette, only available
-    const items = [
-      ...(data.pucciotti  || []),
-      ...(data.crocchette || []),
-    ].filter(i => i.is_available);
-
-    if (!items.length) return;
-
-    // Shuffle
-    for (let i = items.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [items[i], items[j]] = [items[j], items[i]];
-    }
-    slides = items;
-    buildCarousel();
-  } catch (e) {}
-}
-
-function buildCarousel() {
-  const track = document.getElementById("carousel-track");
-  const dots  = document.getElementById("carousel-dots");
-  const wrap  = document.getElementById("carousel-wrap");
-
-  slides.forEach((item, i) => {
-    const cat = item.category || "pucciotti";
-    const emoji = EMOJI[cat] || "🍽️";
-    const desc = (item.ingredients && item.ingredients.join(", ")) || "";
-    const img = itemImage(item);
-
-    const slide = document.createElement("div");
-    slide.className = "carousel-slide";
-    slide.style.display = i === 0 ? "flex" : "none";
-    slide.innerHTML = `
-      ${img
-        ? `<img class="slide-thumb" src="${img}" alt="${item.name}" data-emoji="${emoji}" loading="lazy" onerror="this.replaceWith(Object.assign(document.createElement('span'),{className:'slide-emoji',textContent:this.dataset.emoji}))">`
-        : `<span class="slide-emoji">${emoji}</span>`}
-      <div class="slide-info">
-        <div class="slide-name">${item.name}</div>
-        ${desc ? `<div class="slide-desc">${desc}</div>` : ""}
-      </div>
-      <span class="slide-price">€${parseFloat(item.price).toFixed(2)}</span>`;
-    track.appendChild(slide);
-
-    const dot = document.createElement("div");
-    dot.className = "dot" + (i === 0 ? " active" : "");
-    dots.appendChild(dot);
-  });
-
-  wrap.style.display = "block";
-  startAuto();
-
-  // Touch swipe
-  let startX = 0;
-  track.addEventListener("touchstart", e => { startX = e.touches[0].clientX; }, { passive: true });
-  track.addEventListener("touchend", e => {
-    const dx = e.changedTouches[0].clientX - startX;
-    if (Math.abs(dx) > 40) goTo(dx < 0 ? current + 1 : current - 1);
-  }, { passive: true });
-}
-
-function goTo(n) {
-  const allSlides = document.querySelectorAll(".carousel-slide");
-  const allDots   = document.querySelectorAll(".dot");
-  allSlides[current].style.display = "none";
-  allDots[current].classList.remove("active");
-  current = (n + slides.length) % slides.length;
-  allSlides[current].style.display = "flex";
-  allDots[current].classList.add("active");
-  startAuto(); // reset timer ad ogni cambio slide
-}
-
-function startAuto() {
-  clearInterval(timer);
-  timer = setInterval(() => goTo(current + 1), 3200);
-}
-
-loadCarousel();
-</script>
+      btn.addEventListener("click", () => {
+        panel.classList.contains("open") ? closeRadio() : openRadio();
+      });
+      close.addEventListener("click", closeRadio);
+    })();
+  </script>
 </body>
 </html>
