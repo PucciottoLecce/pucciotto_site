@@ -26,13 +26,17 @@
 
     html, body { height: 100%; }
     html {
-      background: url('sfondo.jpg') center center / cover no-repeat fixed;
+      /* immagine + velo crema, entrambi fissi al viewport: coprono sempre
+         tutta l'area, anche scrollando in fondo */
+      background:
+        linear-gradient(rgba(250,248,245,0.80), rgba(250,248,245,0.90)) fixed,
+        url('sfondo.jpg') center center / cover no-repeat fixed;
       background-color: var(--cream);
     }
     body {
       font-family: 'DM Sans', sans-serif;
-      /* velo crema sopra la foto di sfondo per tenere il testo leggibile */
-      background: linear-gradient(rgba(250,248,245,0.80), rgba(250,248,245,0.90));
+      background: transparent;
+      position: relative;
       color: var(--black);
       min-height: 100vh;
       display: flex;
@@ -153,7 +157,7 @@
 
     /* ── Pulsanti fluttuanti tondi (Quiz / Gioco) ── */
     .fab {
-      position: fixed; z-index: 55; top: 50%; transform: translateY(-50%);
+      position: absolute; z-index: 55; top: 50%; transform: translateY(-50%);
       display: flex; flex-direction: column; align-items: center; gap: 6px;
       text-decoration: none;
     }
