@@ -74,6 +74,12 @@
     }
     .product-card:hover { border-color: #d4d0cc; }
     .product-top { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 10px; }
+    .product-title { display: flex; align-items: center; gap: 10px; min-width: 0; }
+    .product-thumb {
+      width: 46px; height: 46px; flex-shrink: 0;
+      border-radius: 10px; object-fit: cover;
+      background: #f0ece8; border: 1px solid var(--border);
+    }
     .product-name { font-size: 15px; font-weight: 700; }
     .product-cat {
       font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em;
@@ -216,6 +222,16 @@ const NORMALIZE = {
 };
 const norm = a => NORMALIZE[a.toLowerCase()] || a;
 
+// Ricava l'URL immagine di un prodotto dal DB, provando i nomi di campo più comuni.
+function itemImage(item) {
+  const raw = item.image_url || item.image || item.img || item.photo
+    || item.image_path || item.thumbnail
+    || (Array.isArray(item.images) && item.images[0]) || "";
+  if (!raw) return "";
+  if (/^https?:\/\//i.test(raw)) return raw;
+  return API_BASE + (String(raw).startsWith("/") ? "" : "/") + raw;
+}
+
 // Tab switch
 document.querySelectorAll(".tab-btn").forEach(btn => {
   btn.addEventListener("click", () => {
@@ -259,10 +275,14 @@ function render(data) {
   // ── SCHEDE ──
   document.getElementById("schede-content").innerHTML = allItems.map(item => {
     const allergens = (item.allergens || []).map(norm);
+    const img = itemImage(item);
     return `
       <div class="product-card">
         <div class="product-top">
-          <span class="product-name">${item.name}</span>
+          <div class="product-title">
+            ${img ? `<img class="product-thumb" src="${img}" alt="${item.name}" loading="lazy" onerror="this.remove()">` : ""}
+            <span class="product-name">${item.name}</span>
+          </div>
           <span class="product-cat">${CAT_LABEL[item.category] || item.category}</span>
         </div>
         ${allergens.length
