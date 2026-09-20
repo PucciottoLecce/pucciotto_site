@@ -169,13 +169,17 @@
     .side-left {
       left: 0; transform: translateY(-50%);
       border-radius: 0 210px 210px 0 / 0 105px 105px 0;
-      background: var(--red); padding-right: 6px;
+      background: linear-gradient(rgba(0,0,0,0.38), rgba(0,0,0,0.55)), url('quiz.png') center / cover no-repeat;
+      padding-right: 6px;
     }
     .side-right {
       right: 0; transform: translateY(-50%);
       border-radius: 210px 0 0 210px / 105px 0 0 105px;
-      background: linear-gradient(135deg, #f7b733, #e67e22); padding-left: 6px;
+      background: linear-gradient(rgba(0,0,0,0.38), rgba(0,0,0,0.55)), url('gioco.png') center / cover no-repeat;
+      padding-left: 6px;
     }
+    /* testo leggibile sopra le immagini */
+    .side-ico, .side-label, .side-arrow { text-shadow: 0 1px 5px rgba(0,0,0,0.75); }
     .side-ico { font-size: 36px; line-height: 1; }
     .side-label { font-size: 12px; font-weight: 700; text-align: center; line-height: 1.15; max-width: 78px; }
     .side-arrow { font-size: 22px; font-weight: 700; opacity: 0; transition: opacity 0.2s, transform 0.2s; }
