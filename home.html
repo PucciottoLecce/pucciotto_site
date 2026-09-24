@@ -335,6 +335,21 @@
 
     @keyframes fadeUp { from { opacity:0; transform:translateY(14px); } to { opacity:1; transform:translateY(0); } }
     @keyframes slideIn { from { opacity:0; transform:translateX(20px); } to { opacity:1; transform:translateX(0); } }
+    /* ── PC: tutta la home entra nello schermo, social compresi, senza scorrere.
+       Le misure si stringono in base all'altezza disponibile (vh), cosi' va bene
+       anche con finestre basse (barre del browser, zoom di Windows 125-150%). ── */
+    @media (min-width: 641px) {
+      .topbar { position: absolute; top: 0; left: 0; right: 0; } /* badge sovrapposto in alto, non occupa una riga */
+      .hero { padding-top: clamp(14px, 5vh, 48px); }
+      .logo-wrap { margin-bottom: clamp(6px, 1.6vh, 16px); }
+      .logo-wrap img { width: clamp(92px, 17vh, 160px); }
+      .tagline { margin-bottom: clamp(10px, 2.6vh, 28px); }
+      .carousel-wrap { margin-bottom: clamp(10px, 2.6vh, 28px); }
+      .carousel-slide { padding: clamp(12px, 2.1vh, 20px) 20px; }
+      .nav-buttons { gap: clamp(6px, 1.1vh, 10px); padding-bottom: clamp(6px, 1.2vh, 12px); }
+      .btn { padding-top: clamp(10px, 1.8vh, 17px); padding-bottom: clamp(10px, 1.8vh, 17px); }
+      .social-bar { padding-top: clamp(8px, 1.6vh, 16px); padding-bottom: clamp(10px, 2.2vh, 24px); }
+    }
   </style>
 </head>
 <body>
