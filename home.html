@@ -109,13 +109,14 @@
     }
     .carousel-slide:active { background: #fdfbf9; }
     @keyframes fadeSlide { from { opacity:0; transform:translateX(10px); } to { opacity:1; transform:translateX(0); } }
-    .slide-emoji { font-size: 40px; flex-shrink: 0; }
+    .slide-emoji { font-size: 40px; flex-shrink: 0; width: 60px; height: 60px; display: flex; align-items: center; justify-content: center; } /* stesso ingombro della foto */
     .slide-thumb {
       width: 60px; height: 60px; flex-shrink: 0;
       border-radius: 12px; object-fit: cover;
       background: #f0ece8; border: 1px solid var(--border);
     }
-    .slide-info { flex: 1; min-width: 0; }
+    /* altezza fissa (nome + 2 righe di descrizione): tutte le slide alte uguali, la pagina non saltella */
+    .slide-info { flex: 1; min-width: 0; min-height: 60px; display: flex; flex-direction: column; justify-content: center; }
     .slide-name { font-size: 17px; font-weight: 700; margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .slide-desc { font-size: 12px; color: var(--muted); line-height: 1.4; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
     .slide-price {
