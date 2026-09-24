@@ -235,20 +235,33 @@ function itemImage(item) {
 }
 
 // Tab switch
+const activeView = () => document.querySelector(".tab-btn.active")?.dataset.view;
+function showView(view) {
+  document.querySelectorAll(".tab-btn").forEach(b => b.classList.toggle("active", b.dataset.view === view));
+  document.querySelectorAll(".view").forEach(v => {
+    v.classList.remove("active");
+    v.style.display = "none";
+  });
+  const v = document.getElementById(`view-${view}`);
+  v.style.display = "block";
+  // forza reflow per riavviare l'animazione fadeUp
+  void v.offsetWidth;
+  v.classList.add("active");
+}
 document.querySelectorAll(".tab-btn").forEach(btn => {
   btn.addEventListener("click", () => {
-    document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
-    document.querySelectorAll(".view").forEach(v => {
-      v.classList.remove("active");
-      v.style.display = "none";
-    });
-    btn.classList.add("active");
-    const v = document.getElementById(`view-${btn.dataset.view}`);
-    v.style.display = "block";
-    // forza reflow per riavviare l'animazione fadeUp
-    void v.offsetWidth;
-    v.classList.add("active");
+    if (btn.dataset.view === activeView()) return;
+    showView(btn.dataset.view);
+    // passo della cronologia: il tasto "indietro" del telefono torna alla vista precedente
+    try { history.pushState({ view: btn.dataset.view }, ""); } catch (_) {}
   });
+});
+window.addEventListener("popstate", e => {
+  const view = (e.state && e.state.view) || "schede";
+  if (document.getElementById("loading").style.display === "none" && view !== activeView()) {
+    showView(view);
+    if (scrollY > 0) window.scrollTo({ top: 0, behavior: "smooth" });
+  }
 });
 
 async function load() {
@@ -328,7 +341,10 @@ function render(data) {
       }).join("")}
     </tbody>`;
 
-
+  // tornando su questa pagina con "indietro" ripristino la vista di quel passo
+  const st = history.state;
+  if (st && st.view === "tabella") showView("tabella");
+  try { history.replaceState({ view: activeView() }, ""); } catch (_) {}
 }
 
 // ── Swipe orizzontale → vista successiva/precedente (Per prodotto ↔ Tabella) ──
