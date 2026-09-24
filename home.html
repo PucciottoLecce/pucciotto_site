@@ -501,6 +501,30 @@ function buildCarousel() {
     const dx = e.changedTouches[0].clientX - startX;
     if (Math.abs(dx) > 40) { lastSwipe = Date.now(); goTo(dx < 0 ? current + 1 : current - 1); }
   }, { passive: true });
+
+  // Touchpad del PC: lo scorrimento orizzontale a due dita arriva come "wheel".
+  // Sommo lo spostamento e cambio una slide per gesto (pausa anti-inerzia).
+  let wheelAcc = 0, wheelLock = 0;
+  track.addEventListener("wheel", e => {
+    if (Math.abs(e.deltaX) <= Math.abs(e.deltaY)) return; // scroll verticale: lascio scorrere la pagina
+    e.preventDefault(); // niente "indietro/avanti" del browser col gesto orizzontale
+    if (Date.now() < wheelLock) return;
+    wheelAcc += e.deltaX;
+    if (Math.abs(wheelAcc) > 40) {
+      goTo(wheelAcc > 0 ? current + 1 : current - 1);
+      lastSwipe = Date.now(); wheelAcc = 0; wheelLock = Date.now() + 450;
+    }
+  }, { passive: false });
+
+  // Clic e trascina con mouse/touchpad
+  let mouseX = null;
+  track.addEventListener("pointerdown", e => { if (e.pointerType === "mouse") mouseX = e.clientX; });
+  track.addEventListener("pointerup", e => {
+    if (e.pointerType !== "mouse" || mouseX === null) return;
+    const dx = e.clientX - mouseX; mouseX = null;
+    if (Math.abs(dx) > 40) { lastSwipe = Date.now(); goTo(dx < 0 ? current + 1 : current - 1); }
+  });
+  track.addEventListener("dragstart", e => e.preventDefault()); // l'immagine non si "trascina via"
 }
 
 function goTo(n) {
