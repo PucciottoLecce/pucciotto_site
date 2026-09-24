@@ -12,7 +12,7 @@
   <style>
     *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
     :root { --cream: #faf8f5; --red: #c0392b; --red2: #a93226; --border: #e8e4e0; }
-    html, body { height: 100%; }
+    html, body { height: 100%; overscroll-behavior-x: none; } /* gli swipe orizzontali li usano le pagine, non il "indietro" del browser */
     body { background: var(--cream); overflow: hidden; font-family: 'DM Sans', sans-serif; }
 
     /* Contenuto: le pagine del sito vengono caricate qui dentro */
