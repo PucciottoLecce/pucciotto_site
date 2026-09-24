@@ -68,11 +68,13 @@
       padding: 10px 12px; background: #1a1a1a; color: #fff;
       font-size: 13px; font-weight: 600; flex-shrink: 0;
     }
-    .radio-panel-title { flex: 1; }
+    .radio-panel-title { flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    @media (max-width: 480px) { .rpt-long { display: none; } } /* finestra stretta: titolo corto */
     .radio-panel-open, .radio-panel-close {
-      width: 28px; height: 28px; border-radius: 50%; border: none; cursor: pointer;
-      background: rgba(255,255,255,0.12); color: #fff; font-size: 13px;
-      display: flex; align-items: center; justify-content: center; text-decoration: none;
+      height: 28px; padding: 0 10px; border-radius: 14px; border: none; cursor: pointer;
+      background: rgba(255,255,255,0.12); color: #fff;
+      font-family: inherit; font-size: 12px; font-weight: 600; white-space: nowrap;
+      display: flex; align-items: center; justify-content: center; gap: 4px; text-decoration: none;
       flex-shrink: 0; transition: background 0.15s;
     }
     .radio-panel-open:hover, .radio-panel-close:hover { background: rgba(255,255,255,0.24); }
@@ -147,9 +149,9 @@
 
   <div class="radio-panel" id="radio-panel" aria-hidden="true">
     <div class="radio-panel-head">
-      <span class="radio-panel-title">📻 Radio Pucciotto</span>
-      <a class="radio-panel-open" href="https://radio.pucciotto.it/" target="_blank" rel="noopener" title="Apri a schermo intero">↗</a>
-      <button class="radio-panel-close" id="radio-panel-close" aria-label="Chiudi">✕</button>
+      <span class="radio-panel-title">📻 Radio<span class="rpt-long"> Pucciotto</span></span>
+      <a class="radio-panel-open" href="https://radio.pucciotto.it/" target="_blank" rel="noopener" title="Apri Radio Pucciotto a schermo intero">Vai al sito ↗</a>
+      <button class="radio-panel-close" id="radio-panel-close">Chiudi ✕</button>
     </div>
     <div class="radio-panel-body" id="radio-panel-body"></div>
   </div>
