@@ -82,6 +82,12 @@
     .menu-card:hover { border-color: #d0ccc8; box-shadow: 0 4px 14px rgba(0,0,0,0.08); }
     .menu-card:active { transform: scale(0.99); border-color: #d0ccc8; box-shadow: 0 4px 14px rgba(0,0,0,0.08); }
     .menu-card.unavailable { opacity: 0.42; }
+    /* lampeggio del piatto scelto dal carosello della home */
+    .menu-card.flash { animation: cardFlash 0.6s ease-in-out 0.3s 4; }
+    @keyframes cardFlash {
+      0%, 100% { border-color: var(--border); box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+      50%      { border-color: var(--red); box-shadow: 0 0 0 4px rgba(192,57,43,0.3), 0 6px 20px rgba(192,57,43,0.22); }
+    }
 
     .card-thumb {
       width: 68px; height: 68px; flex-shrink: 0; align-self: center;
@@ -305,6 +311,8 @@ function renderMenu(data) {
     });
   });
 
+  focusFromQuery(data, cats);
+
   // float nav visibility — attiva solo dopo paint
   requestAnimationFrame(() => {
     const observer = new IntersectionObserver(([e]) => {
@@ -359,6 +367,28 @@ document.getElementById("detail-modal").addEventListener("click", e => {
 document.addEventListener("keydown", e => {
   if (e.key === "Escape") closeDetail();
 });
+
+// Arrivo dal carosello della home (menu.html?item=…&id=…): apre la categoria
+// del piatto, ci scorre sopra e lo fa lampeggiare
+function focusFromQuery(data, cats) {
+  const q = new URLSearchParams(location.search);
+  const id = q.get("id"), name = q.get("item");
+  if (id === null && name === null) return;
+  for (const cat of cats) {
+    const idx = data[cat].findIndex(x =>
+      (id !== null && String(x.id) === id) || (name !== null && x.name === name));
+    if (idx === -1) continue;
+    switchTab(cat);
+    const card = document.querySelectorAll(`#cat-${cat} .menu-card`)[idx];
+    if (!card) return;
+    setTimeout(() => {
+      card.scrollIntoView({ behavior: "smooth", block: "center" });
+      card.classList.add("flash");
+      card.addEventListener("animationend", () => card.classList.remove("flash"), { once: true });
+    }, 200);
+    return;
+  }
+}
 
 function switchTab(cat) {
   document.querySelectorAll(".tab-btn,.float-btn").forEach(b => b.classList.toggle("active", b.dataset.cat === cat));
