@@ -82,6 +82,8 @@
     .menu-card:hover { border-color: #d0ccc8; box-shadow: 0 4px 14px rgba(0,0,0,0.08); }
     .menu-card:active { transform: scale(0.99); border-color: #d0ccc8; box-shadow: 0 4px 14px rgba(0,0,0,0.08); }
     .menu-card.unavailable { opacity: 0.42; }
+    /* card cliccabile: niente selezione testo / "tocca per cercare" / traduttore */
+    .menu-card { -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; -webkit-tap-highlight-color: transparent; }
     /* lampeggio del piatto scelto dal carosello della home */
     .menu-card.flash { animation: cardFlash 0.6s ease-in-out 0.3s 4; }
     @keyframes cardFlash {
