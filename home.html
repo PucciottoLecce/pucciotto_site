@@ -2,6 +2,12 @@
 <html lang="it">
 <head>
   <meta charset="UTF-8">
+  <script>
+    // Aperta da sola (link diretto, segnalibro, suggerimento del browser)? La riapro
+    // dentro il contenitore app, sulla stessa pagina: cosi' non si finisce mai
+    // "a tutta pagina" senza radio, e il tasto indietro resta coerente.
+    if (window.top === window) location.replace("/?p=" + encodeURIComponent(location.pathname.split("/").pop() + location.search));
+  </script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>Pucciotto – La puccia 2.0</title>
   <meta name="description" content="Pucciotto – La puccia 2.0. Scopri il menù, gli allergeni e ordina online.">
