@@ -426,10 +426,11 @@ async function loadCarousel() {
     if (!res.ok) return;
     const data = await res.json();
 
-    // Merge pucciotti + crocchette, only available
+    // Merge pucciotti + crocchette, only available (ricordo la categoria di
+    // provenienza per aprire esattamente quel piatto nel menù)
     const items = [
-      ...(data.pucciotti  || []),
-      ...(data.crocchette || []),
+      ...(data.pucciotti  || []).map(x => ({ ...x, _cat: "pucciotti" })),
+      ...(data.crocchette || []).map(x => ({ ...x, _cat: "crocchette" })),
     ].filter(i => i.is_available);
 
     if (!items.length) return;
@@ -472,7 +473,7 @@ function buildCarousel() {
     // tap sulla slide → apre il menù sul piatto e lo evidenzia
     slide.addEventListener("click", () => {
       if (Date.now() - lastSwipe < 400) return; // era uno swipe, non un tap
-      let url = "menu.html?item=" + encodeURIComponent(item.name);
+      let url = "menu.html?cat=" + item._cat + "&item=" + encodeURIComponent(item.name);
       if (item.id != null) url += "&id=" + encodeURIComponent(item.id);
       location.href = url;
     });
