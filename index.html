@@ -129,7 +129,17 @@
 <body>
 
   <!-- Le pagine del sito vengono caricate qui; la radio sotto resta sempre attiva -->
-  <iframe id="view" class="view" src="home.html" title="Pucciotto" allow="autoplay; encrypted-media"></iframe>
+  <iframe id="view" class="view" title="Pucciotto" allow="autoplay; encrypted-media"></iframe>
+  <script>
+    // ?p=<pagina>: una pagina aperta da sola chiede di essere mostrata qui dentro.
+    // Accetto solo le pagine del sito; di default la home.
+    (function () {
+      const p = new URLSearchParams(location.search).get("p");
+      const ok = p && /^(home|menu|allergeni|progetto)(\.html)?(\?[^#]*)?$/.test(p);
+      document.getElementById("view").src = ok ? p : "home.html";
+      if (p !== null) try { history.replaceState(null, "", location.pathname); } catch (_) {}
+    })();
+  </script>
 
   <!-- Sfondo per chiudere il pannello toccando fuori -->
   <div class="radio-backdrop" id="radio-backdrop"></div>
