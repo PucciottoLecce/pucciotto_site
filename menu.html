@@ -16,6 +16,8 @@
       --border: #e8e4e0; --muted: #999;
     }
     body { font-family: 'DM Sans', sans-serif; background: var(--cream); color: var(--black); min-height: 100vh; -webkit-font-smoothing: antialiased; }
+    /* lo swipe orizzontale cambia categoria: evito che il browser lo usi come "indietro" */
+    html, body { overscroll-behavior-x: none; }
 
     /* ── Header ── */
     .header {
@@ -58,9 +60,14 @@
     .tab-btn:hover:not(.active) { border-color: #bbb; color: var(--black); }
 
     /* ── Content ── */
-    .content { max-width: 680px; margin: 0 auto; padding: 20px 16px 110px; }
+    .content { max-width: 680px; margin: 0 auto; padding: 20px 16px 110px; overflow-x: clip; }
     .category-section { display: none; animation: fadeUp 0.22s ease both; }
     .category-section.active { display: block; }
+    /* ingresso laterale quando si cambia categoria con lo swipe */
+    .category-section.enter-next { animation: slideFromRight 0.26s ease both; }
+    .category-section.enter-prev { animation: slideFromLeft 0.26s ease both; }
+    @keyframes slideFromRight { from { opacity: 0; transform: translateX(40px); } to { opacity: 1; transform: none; } }
+    @keyframes slideFromLeft  { from { opacity: 0; transform: translateX(-40px); } to { opacity: 1; transform: none; } }
 
     .cat-header { display: flex; align-items: center; gap: 10px; margin-bottom: 4px; }
     .cat-icon { font-size: 22px; }
@@ -255,6 +262,7 @@ function renderMenu(data) {
   wrap.style.display = "block";
 
   const cats = Object.keys(CAT_META).filter(c => data[c] && data[c].length);
+  CATS = cats;
 
   cats.forEach((cat, i) => {
     const m = CAT_META[cat];
@@ -399,10 +407,49 @@ function focusFromQuery(data, cats) {
   }
 }
 
-function switchTab(cat) {
+function switchTab(cat, dir) {
   document.querySelectorAll(".tab-btn,.float-btn").forEach(b => b.classList.toggle("active", b.dataset.cat === cat));
   document.querySelectorAll(".category-section").forEach(s => s.classList.toggle("active", s.id === `cat-${cat}`));
+  if (dir) { // arrivo con lo swipe: la categoria entra dal lato giusto
+    const sec = document.getElementById(`cat-${cat}`);
+    sec.classList.remove("enter-next", "enter-prev");
+    void sec.offsetWidth;
+    sec.classList.add("enter-" + dir);
+    sec.addEventListener("animationend", e => {
+      if (e.target === sec) sec.classList.remove("enter-next", "enter-prev");
+    }, { once: true });
+  }
 }
+
+// ── Swipe orizzontale sul contenuto → categoria successiva/precedente ──
+let CATS = [];
+(function initCategorySwipe() {
+  let x0 = null, y0 = null;
+  document.addEventListener("touchstart", e => {
+    x0 = null;
+    if (e.touches.length !== 1) return;
+    const t = e.touches[0];
+    // non intercetto la barra delle categorie, la scheda dettaglio, l'header e i bordi (gesto "indietro")
+    if (e.target.closest(".tabs, .float-nav, .modal-overlay, .header")) return;
+    if (t.clientX < 24 || t.clientX > innerWidth - 24) return;
+    x0 = t.clientX; y0 = t.clientY;
+  }, { passive: true });
+  document.addEventListener("touchend", e => {
+    if (x0 === null || !CATS.length) return;
+    const t = e.changedTouches[0], dx = t.clientX - x0, dy = t.clientY - y0;
+    x0 = null;
+    if (Math.abs(dx) < 60 || Math.abs(dx) < Math.abs(dy) * 1.5) return; // non era uno swipe orizzontale
+    const cur = CATS.indexOf(document.querySelector(".tab-btn.active")?.dataset.cat);
+    const next = cur + (dx < 0 ? 1 : -1);
+    if (cur === -1 || next < 0 || next >= CATS.length) return;
+    switchTab(CATS[next], dx < 0 ? "next" : "prev");
+    // porto in vista il pulsante della categoria nella barra e torno in cima alla lista
+    const tabsEl = document.getElementById("tabs");
+    const btn = tabsEl.querySelector(`.tab-btn[data-cat="${CATS[next]}"]`);
+    if (btn) tabsEl.scrollTo({ left: btn.offsetLeft - (tabsEl.clientWidth - btn.offsetWidth) / 2, behavior: "smooth" });
+    if (scrollY > 0) window.scrollTo({ top: 0, behavior: "smooth" });
+  }, { passive: true });
+})();
 
 loadMenu();
 </script>

@@ -15,6 +15,8 @@
       --red: #c0392b; --border: #e8e4e0; --muted: #999;
     }
     body { font-family: 'DM Sans', sans-serif; background: var(--cream); color: var(--black); min-height: 100vh; -webkit-font-smoothing: antialiased; }
+    /* lo swipe orizzontale cambia vista: evito che il browser lo usi come "indietro" */
+    html, body { overscroll-behavior-x: none; }
 
     /* ── Header ── */
     .header {
@@ -328,6 +330,32 @@ function render(data) {
 
 
 }
+
+// ── Swipe orizzontale → vista successiva/precedente (Per prodotto ↔ Tabella) ──
+(function initViewSwipe() {
+  const order = ["schede", "tabella"];
+  let x0 = null, y0 = null;
+  document.addEventListener("touchstart", e => {
+    x0 = null;
+    if (e.touches.length !== 1) return;
+    const t = e.touches[0];
+    // la tabella scorre in orizzontale da sola: li' non cambio vista
+    if (e.target.closest(".tabs, .header, .notice, .mobile-scroll, .table-wrap")) return;
+    if (t.clientX < 24 || t.clientX > innerWidth - 24) return; // bordi: gesto "indietro"
+    x0 = t.clientX; y0 = t.clientY;
+  }, { passive: true });
+  document.addEventListener("touchend", e => {
+    if (x0 === null || document.getElementById("loading").style.display !== "none") return;
+    const t = e.changedTouches[0], dx = t.clientX - x0, dy = t.clientY - y0;
+    x0 = null;
+    if (Math.abs(dx) < 60 || Math.abs(dx) < Math.abs(dy) * 1.5) return;
+    const cur = order.indexOf(document.querySelector(".tab-btn.active")?.dataset.view);
+    const next = cur + (dx < 0 ? 1 : -1);
+    if (cur === -1 || next < 0 || next >= order.length) return;
+    document.querySelector(`.tab-btn[data-view="${order[next]}"]`).click();
+    if (scrollY > 0) window.scrollTo({ top: 0, behavior: "smooth" });
+  }, { passive: true });
+})();
 
 load();
 </script>
