@@ -274,7 +274,7 @@ function renderMenu(data) {
     btn.className = "tab-btn" + (i === 0 ? " active" : "");
     btn.innerHTML = `${m.icon} ${m.label}`;
     btn.dataset.cat = cat;
-    btn.addEventListener("click", () => switchTab(cat));
+    btn.addEventListener("click", () => goCat(cat));
     tabsEl.appendChild(btn);
 
     // float btn
@@ -282,7 +282,7 @@ function renderMenu(data) {
     fb.className = "float-btn" + (i === 0 ? " active" : "");
     fb.innerHTML = `${m.icon} ${m.label}`;
     fb.dataset.cat = cat;
-    fb.addEventListener("click", () => { switchTab(cat); window.scrollTo({ top: 0, behavior: "smooth" }); });
+    fb.addEventListener("click", () => { goCat(cat); window.scrollTo({ top: 0, behavior: "smooth" }); });
     floatEl.appendChild(fb);
 
     // section
@@ -321,7 +321,12 @@ function renderMenu(data) {
     });
   });
 
+  const fromCarousel = new URLSearchParams(location.search).has("item");
   focusFromQuery(data, cats);
+  // tornando su questa pagina con "indietro" ripristino la categoria di quel passo
+  const st = history.state;
+  if (!fromCarousel && st && cats.includes(st.cat)) switchTab(st.cat);
+  try { history.replaceState({ cat: activeCat() }, "", location.pathname); } catch (_) {}
 
   // float nav visibility — attiva solo dopo paint
   requestAnimationFrame(() => {
@@ -363,11 +368,19 @@ function openDetail(item, cat) {
   sheet.scrollTop = 0;
   modal.classList.add("open");
   document.body.style.overflow = "hidden";
+  try { history.pushState({ cat: activeCat(), modal: true }, ""); } catch (_) {}
+}
+
+function hideDetail() {
+  document.getElementById("detail-modal").classList.remove("open");
+  document.body.style.overflow = "";
 }
 
 function closeDetail() {
-  document.getElementById("detail-modal").classList.remove("open");
-  document.body.style.overflow = "";
+  if (!document.getElementById("detail-modal").classList.contains("open")) return;
+  // tolgo il passo della scheda dalla cronologia: la chiude il popstate
+  if (history.state && history.state.modal) history.back();
+  else hideDetail();
 }
 
 // chiusura: click sullo sfondo o tasto Esc
@@ -421,6 +434,35 @@ function switchTab(cat, dir) {
   }
 }
 
+const activeCat = () => document.querySelector(".tab-btn.active")?.dataset.cat;
+
+// porta in vista il pulsante della categoria nella barra in alto
+function centerTab(cat) {
+  const tabsEl = document.getElementById("tabs");
+  const btn = tabsEl.querySelector(`.tab-btn[data-cat="${cat}"]`);
+  if (btn) tabsEl.scrollTo({ left: btn.offsetLeft - (tabsEl.clientWidth - btn.offsetWidth) / 2, behavior: "smooth" });
+}
+
+// cambio di categoria voluto dall'utente (tap o swipe): diventa un passo della
+// cronologia, cosi' il tasto "indietro" del telefono torna alla categoria precedente
+function goCat(cat, dir) {
+  if (cat === activeCat()) return;
+  switchTab(cat, dir);
+  try { history.pushState({ cat }, ""); } catch (_) {}
+}
+
+// tasto "indietro"/"avanti": chiude la scheda o torna alla categoria di quel passo
+window.addEventListener("popstate", e => {
+  const st = e.state || {};
+  if (document.getElementById("detail-modal").classList.contains("open") && !st.modal) hideDetail();
+  const cur = activeCat();
+  if (st.cat && CATS.includes(st.cat) && st.cat !== cur) {
+    switchTab(st.cat, CATS.indexOf(st.cat) < CATS.indexOf(cur) ? "prev" : "next");
+    centerTab(st.cat);
+    if (scrollY > 0) window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+});
+
 // ── Swipe orizzontale sul contenuto → categoria successiva/precedente ──
 let CATS = [];
 (function initCategorySwipe() {
@@ -442,11 +484,9 @@ let CATS = [];
     const cur = CATS.indexOf(document.querySelector(".tab-btn.active")?.dataset.cat);
     const next = cur + (dx < 0 ? 1 : -1);
     if (cur === -1 || next < 0 || next >= CATS.length) return;
-    switchTab(CATS[next], dx < 0 ? "next" : "prev");
+    goCat(CATS[next], dx < 0 ? "next" : "prev");
     // porto in vista il pulsante della categoria nella barra e torno in cima alla lista
-    const tabsEl = document.getElementById("tabs");
-    const btn = tabsEl.querySelector(`.tab-btn[data-cat="${CATS[next]}"]`);
-    if (btn) tabsEl.scrollTo({ left: btn.offsetLeft - (tabsEl.clientWidth - btn.offsetWidth) / 2, behavior: "smooth" });
+    centerTab(CATS[next]);
     if (scrollY > 0) window.scrollTo({ top: 0, behavior: "smooth" });
   }, { passive: true });
 })();
