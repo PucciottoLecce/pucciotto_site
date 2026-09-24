@@ -25,13 +25,16 @@
     }
 
     html, body { height: 100%; }
-    html {
-      /* immagine + velo crema, entrambi fissi al viewport: coprono sempre
-         tutta l'area, anche scrollando in fondo */
+    html { background: #fff; }
+    /* Sfondo: foto sempre intera e centrata (uguale su smartphone e PC), lati
+       bianchi come il fondo della foto, velo chiaro per la leggibilita'.
+       Livello fisso invece di background-attachment:fixed, che su iPhone non va. */
+    body::before {
+      content: ""; position: fixed; inset: 0; z-index: -1; pointer-events: none;
       background:
-        linear-gradient(rgba(250,248,245,0.80), rgba(250,248,245,0.90)) fixed,
-        url('sfondo.jpg') center center / cover no-repeat fixed;
-      background-color: var(--cream);
+        linear-gradient(rgba(255,255,255,var(--veil,0.6)), rgba(255,255,255,var(--veil,0.6))),
+        url('sfondo.jpg') center / contain no-repeat,
+        #fff;
     }
     body {
       font-family: 'DM Sans', sans-serif;
@@ -61,20 +64,16 @@
       justify-content: center;
       margin-bottom: 16px;
     }
-    .logo-wrap img { width: 160px; height: auto; display: block; }
+    /* alone bianco: il logo resta nitido sopra la foto di sfondo */
+    .logo-wrap img { width: 160px; height: auto; display: block; filter: drop-shadow(0 0 6px #fff) drop-shadow(0 0 2px #fff); }
 
     .tagline {
-      font-size: 12px; font-weight: 500;
+      font-size: 12px; font-weight: 600;
       letter-spacing: 0.22em; text-transform: uppercase;
-      color: var(--muted);
+      color: #6f6a66;
       margin-bottom: 28px;
-    }
-
-    .tagline {
-      font-size: 12px; font-weight: 500;
-      letter-spacing: 0.22em; text-transform: uppercase;
-      color: var(--muted);
-      margin-bottom: 28px;
+      /* piccola etichetta chiara: leggibile anche sopra la foto */
+      background: rgba(255,255,255,0.85); padding: 5px 12px; border-radius: 20px;
     }
 
     /* ── CAROUSEL ── */
