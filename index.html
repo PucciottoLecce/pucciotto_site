@@ -86,21 +86,57 @@
     .radio-panel-msg a { color: #ff8a7a; }
 
     @media (max-width: 480px) {
-      /* su smartphone finestra piccola, sopra il pulsante radio */
+      /* su smartphone: finestra piccola subito sotto il pulsante "Radio Pucciotto" */
       .radio-panel {
-        top: auto; left: auto;
-        bottom: calc(14px + env(safe-area-inset-bottom, 0px)); right: 12px;
-        width: min(300px, calc(100vw - 24px));
-        height: 430px; max-height: calc(100vh - 90px);
+        top: 54px; right: 10px; left: auto; bottom: auto;
+        width: min(300px, calc(100vw - 20px));
+        height: min(500px, calc(100vh - 70px));
         border-radius: 18px;
       }
+      /* zoom interno piu' basso: l'intero player entra senza scorrere */
+      .radio-panel-body iframe { width: 167%; height: 167%; transform: scale(0.6); }
     }
+
+    /* Sfondo trasparente dietro al pannello: toccando fuori si chiude */
+    .radio-backdrop { position: fixed; inset: 0; z-index: 59; display: none; background: transparent; }
+    .radio-backdrop.show { display: block; }
+
+    /* Suggerimento iniziale vicino al pulsante radio */
+    .radio-hint {
+      position: fixed; z-index: 63; top: 54px; right: 14px;
+      max-width: 230px; background: #1a1a1a; color: #fff;
+      font-size: 12.5px; line-height: 1.4; font-weight: 500;
+      padding: 10px 12px; border-radius: 12px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+      display: flex; gap: 8px; align-items: flex-start;
+      animation: hintIn 0.35s ease both; cursor: pointer;
+    }
+    .radio-hint::before {
+      content: ""; position: absolute; top: -6px; right: 30px;
+      border-left: 6px solid transparent; border-right: 6px solid transparent;
+      border-bottom: 6px solid #1a1a1a;
+    }
+    .radio-hint.hide { display: none; }
+    .radio-hint-x {
+      background: none; border: none; color: rgba(255,255,255,0.6);
+      font-size: 16px; line-height: 1; cursor: pointer; padding: 0; flex-shrink: 0;
+    }
+    @keyframes hintIn { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: none; } }
   </style>
 </head>
 <body>
 
   <!-- Le pagine del sito vengono caricate qui; la radio sotto resta sempre attiva -->
   <iframe id="view" class="view" src="home.html" title="Pucciotto" allow="autoplay; encrypted-media"></iframe>
+
+  <!-- Sfondo per chiudere il pannello toccando fuori -->
+  <div class="radio-backdrop" id="radio-backdrop"></div>
+
+  <!-- Suggerimento iniziale -->
+  <div class="radio-hint hide" id="radio-hint" role="status">
+    <span>🎧 Avvia la radio mentre sfogli il menù!</span>
+    <button class="radio-hint-x" id="radio-hint-x" aria-label="Chiudi suggerimento">×</button>
+  </div>
 
   <!-- Radio persistente -->
   <button class="radio-btn" id="radio-btn" aria-label="Ascolta Radio Pucciotto">
@@ -127,8 +163,15 @@
       const panel = document.getElementById("radio-panel");
       const body  = document.getElementById("radio-panel-body");
       const close = document.getElementById("radio-panel-close");
+      const backdrop = document.getElementById("radio-backdrop");
+      const hint  = document.getElementById("radio-hint");
+      const hintX = document.getElementById("radio-hint-x");
+
+      function hideHint() { hint.classList.add("hide"); }
 
       function openRadio() {
+        hideHint();
+        backdrop.classList.add("show");
         if (!body.querySelector("iframe")) {
           const f = document.createElement("iframe");
           f.src = RADIO_SITE;
@@ -149,6 +192,7 @@
         // continua a suonare in sottofondo
         panel.classList.remove("open");
         panel.setAttribute("aria-hidden", "true");
+        backdrop.classList.remove("show");
       }
 
       function showBlocked() {
@@ -161,6 +205,19 @@
         panel.classList.contains("open") ? closeRadio() : openRadio();
       });
       close.addEventListener("click", closeRadio);
+      // tocco/clic fuori dal pannello → si chiude (la radio continua a suonare)
+      backdrop.addEventListener("click", closeRadio);
+
+      // Suggerimento all'avvio: una volta per sessione, sparisce da solo
+      let seen = false;
+      try { seen = sessionStorage.getItem("radioHintSeen") === "1"; } catch (_) {}
+      if (!seen) {
+        setTimeout(() => hint.classList.remove("hide"), 1200);
+        setTimeout(hideHint, 9000);
+        try { sessionStorage.setItem("radioHintSeen", "1"); } catch (_) {}
+      }
+      hintX.addEventListener("click", e => { e.stopPropagation(); hideHint(); });
+      hint.addEventListener("click", openRadio); // toccando il suggerimento parte la radio
     })();
   </script>
 </body>
