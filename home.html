@@ -26,14 +26,15 @@
 
     html, body { height: 100%; }
     html { background: #fff; }
-    /* Sfondo: foto sempre intera e centrata (uguale su smartphone e PC), lati
-       bianchi come il fondo della foto, velo chiaro per la leggibilita'.
-       Livello fisso invece di background-attachment:fixed, che su iPhone non va. */
+    /* Sfondo: ritaglio della foto centrato sulle polpette, a tutto schermo e
+       centrato (su PC si vedono tutti i pucciotti, su smartphone quelli centrali),
+       velo chiaro per la leggibilita'. Livello fisso invece di
+       background-attachment:fixed, che su iPhone non va. */
     body::before {
       content: ""; position: fixed; inset: 0; z-index: -1; pointer-events: none;
       background:
         linear-gradient(rgba(255,255,255,var(--veil,0.6)), rgba(255,255,255,var(--veil,0.6))),
-        url('sfondo.jpg') center / contain no-repeat,
+        url('sfondo.jpg') center / cover no-repeat,
         #fff;
     }
     body {
@@ -70,7 +71,7 @@
     .tagline {
       font-size: 12px; font-weight: 600;
       letter-spacing: 0.22em; text-transform: uppercase;
-      color: #6f6a66;
+      color: var(--red);
       margin-bottom: 28px;
       /* piccola etichetta chiara: leggibile anche sopra la foto */
       background: rgba(255,255,255,0.85); padding: 5px 12px; border-radius: 20px;
@@ -155,8 +156,8 @@
     .btn-secondary { background: var(--white); color: var(--black); border-color: var(--border); box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
     .btn-secondary:hover { border-color: #ccc; }
 
-    .btn-dark { background: var(--black); color: #fff; box-shadow: 0 4px 16px rgba(0,0,0,0.18); }
-    .btn-dark:hover { background: #2d2d2d; }
+    .btn-havana { background: #8b5e34; color: #fff; box-shadow: 0 4px 16px rgba(139,94,52,0.3); }
+    .btn-havana:hover { background: #74491f; }
 
     /* ── Semicerchi laterali (Quiz / Gioco) ── */
     .side-tab {
@@ -214,8 +215,8 @@
     }
     .social-link {
       display: flex; align-items: center; gap: 5px;
-      color: var(--muted); text-decoration: none;
-      font-size: 12px; font-weight: 500;
+      color: var(--black); text-decoration: none;
+      font-size: 12px; font-weight: 600;
       transition: color 0.2s;
     }
     .social-link:hover { color: var(--red); }
@@ -357,15 +358,15 @@
 
   <!-- Nav -->
   <nav class="nav-buttons">
-    <a href="menu.html" class="btn btn-primary">
+    <a href="menu.html" class="btn btn-secondary">
       <span class="btn-left"><span class="btn-icon">🥙</span>Menù</span>
       <span class="btn-arrow">→</span>
     </a>
-    <a href="allergeni.html" class="btn btn-secondary">
+    <a href="allergeni.html" class="btn btn-primary">
       <span class="btn-left"><span class="btn-icon">⚠️</span>Allergeni</span>
       <span class="btn-arrow">→</span>
     </a>
-    <a href="https://order.pucciotto.it/ordini" target="_blank" rel="noopener" class="btn btn-dark">
+    <a href="https://order.pucciotto.it/ordini" target="_blank" rel="noopener" class="btn btn-havana">
       <span class="btn-left"><span class="btn-icon">🛒</span>Ordina ora</span>
       <span class="btn-arrow">→</span>
     </a>
