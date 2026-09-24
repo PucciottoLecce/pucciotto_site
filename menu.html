@@ -368,19 +368,26 @@ document.addEventListener("keydown", e => {
   if (e.key === "Escape") closeDetail();
 });
 
-// Arrivo dal carosello della home (menu.html?item=…&id=…): apre la categoria
-// del piatto, ci scorre sopra e lo fa lampeggiare
+// Arrivo dal carosello della home (menu.html?cat=…&item=…&id=…): apre la
+// categoria del piatto, ci scorre sopra e fa lampeggiare SOLO quel piatto
 function focusFromQuery(data, cats) {
   const q = new URLSearchParams(location.search);
-  const id = q.get("id"), name = q.get("item");
-  if (id === null && name === null) return;
-  for (const cat of cats) {
-    const idx = data[cat].findIndex(x =>
-      (id !== null && String(x.id) === id) || (name !== null && x.name === name));
+  const want = q.get("cat"), id = q.get("id"), name = q.get("item");
+  if (name === null) return;
+  // tolgo i parametri: tornando indietro/avanti non rilampeggia
+  try { history.replaceState(null, "", location.pathname); } catch (_) {}
+
+  // cerco prima nella categoria indicata, poi (se serve) nelle altre
+  const order = cats.includes(want) ? [want, ...cats.filter(c => c !== want)] : cats;
+  // corrispondenza esatta: stesso nome e, se presente, stesso id
+  const exact = x => x.name === name && (id === null || String(x.id) === id);
+  for (const cat of order) {
+    const idx = data[cat].findIndex(exact);
     if (idx === -1) continue;
-    switchTab(cat);
     const card = document.querySelectorAll(`#cat-${cat} .menu-card`)[idx];
     if (!card) return;
+    switchTab(cat);
+    document.querySelectorAll(".menu-card.flash").forEach(c => c.classList.remove("flash"));
     setTimeout(() => {
       card.scrollIntoView({ behavior: "smooth", block: "center" });
       card.classList.add("flash");
